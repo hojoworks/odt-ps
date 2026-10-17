@@ -251,7 +251,9 @@ check("all products generate XML", allOk, true);
    there. Comments are stripped first, so prose cannot look like a call either. */
 const installerSource = readFileSync(join(root, "get.ps1"), "utf8")
   .replace(/<#[\s\S]*?#>/g, (block) => block.replace(/[^\n]/g, " "))
-  .split("\n").map((line) => {
+  /* split on either ending: git checks this file out with CRLF on Linux, and an
+     indexOf over "\n)\n" quietly fails on a \r */
+  .split(/\r?\n/).map((line) => {
     const comment = line.indexOf("#");
     return comment < 0 ? line : line.slice(0, comment).replace(/[^\n]/g, " ");
   }).join("\n");
