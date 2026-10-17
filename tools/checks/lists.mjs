@@ -105,21 +105,21 @@ export async function run(ctx) {
   const paneBack = await evaluate(client,
     "(function () {" +
     "  var section = document.getElementById('s-build');" +
-    "  var rows = section.querySelectorAll('.pick');" +
     "  var pane = section.querySelector('.pick-desc p');" +
-    "  var checked = section.querySelector('.pick input:checked');
-  var chosen = checked ? checked.closest('.pick').getAttribute('data-note') : null;" +
-    "  var other = Array.prototype.filter.call(rows, function (row) {" +
+    "  var rows = Array.prototype.slice.call(section.querySelectorAll('.pick'));" +
+    "  var checked = section.querySelector('.pick input:checked');" +
+    "  var chosen = checked ? checked.closest('.pick').getAttribute('data-note') : null;" +
+    "  var other = rows.filter(function (row) {" +
     "    return !row.querySelector('input').checked; }) [0];" +
     "  other.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));" +
     "  var hovered = pane.textContent;" +
     "  other.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, relatedTarget: section }));" +
-    "  return { chosen: chosen, hovered: hovered, restored: pane.textContent," +
-    "           differs: hovered !== chosen };" +
+    "  return { chosen: chosen, other: other.getAttribute('data-note'), hovered: hovered," +
+    "           restored: pane.textContent };" +
     "})()");
-  check("a description pane returns to the chosen row when the pointer leaves",
-    paneBack.differs === true && paneBack.hovered === paneBack.other &&
-    paneBack.restored === paneBack.chosen, JSON.stringify(paneBack));
+  check("a description pane returns to the ticked row when the pointer leaves",
+    paneBack.hovered === paneBack.other && paneBack.restored === paneBack.chosen &&
+    paneBack.other !== paneBack.chosen, JSON.stringify(paneBack));
 
   check("Add Additional Applications is its own block in Apps, styled like the app list",
     pickLists.addonsInApps === 2 && pickLists.addonListStyled === true &&
