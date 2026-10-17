@@ -1,6 +1,6 @@
-# Hojoworks ODT
+# odt-ps
 
-A Windows 3.1-style setup screen that writes the Office Deployment Tool's `configuration.xml` for you. Pick your
+A Windows 9x-style setup screen that writes the Office Deployment Tool's `configuration.xml` for you. Pick your
 product, apps, version and languages, then take the result three ways: the XML itself, the ODT commands to run
 yourself, or one line of PowerShell that does the lot.
 

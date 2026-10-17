@@ -1,8 +1,8 @@
-/* Hojoworks ODT: the palette, the geometry tokens, the desktop and the window
-   chrome. Palette is the 16-colour Windows 3.1 set only (see README). */
+/* odt-ps: the palette, the geometry tokens, the desktop and the window
+   chrome. Palette is the 16-colour Windows 9x set only (see README). */
 
-/* Hojoworks ODT Setup: Windows 3.1 setup-screen styling.
-   Palette is the 16-colour Windows 3.1 set only:
+/* odt-ps Setup: Windows 9x setup-screen styling.
+   Palette is the 16-colour Windows 9x set only:
    #000000 #800000 #008000 #808000 #000080 #800080 #008080 #c0c0c0
    #808080 #ff0000 #00ff00 #ffff00 #0000ff #ff00ff #00ffff #ffffff */
 

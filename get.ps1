@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Hojoworks ODT - installs Microsoft Office / Microsoft 365 Apps through the
+    odt-ps - installs Microsoft Office / Microsoft 365 Apps through the
     official Office Deployment Tool, from settings given as parameters.
 
 .DESCRIPTION
@@ -123,7 +123,7 @@ if (-not $PSCommandPath -and $env:ODT_ARGS -and $env:ODT_ARGS.Trim()) {
     $switches = @($env:ODT_ARGS.Trim() -split '\s+')
 
     Write-Host ''
-    Write-Host '  Hojoworks ODT' -ForegroundColor Cyan
+    Write-Host '  odt-ps' -ForegroundColor Cyan
     Write-Host ('  Settings from: ' + $env:ODT_ARGS) -ForegroundColor DarkGray
     Write-Host ''
 
@@ -175,7 +175,7 @@ $script:OdtPageUrl = 'https://www.microsoft.com/en-us/download/details.aspx?id=4
 function Write-Banner {
     Write-Host ''
     Write-Host '  ======================================================================' -ForegroundColor DarkCyan
-    Write-Host '    H O J O W O R K S   O D T' -ForegroundColor Cyan
+    Write-Host '    O D T - P S' -ForegroundColor Cyan
     Write-Host ('    Microsoft Office installer  v' + $script:ToolVersion) -ForegroundColor DarkGray
     Write-Host '    Powered by the official Microsoft Office Deployment Tool.' -ForegroundColor DarkGray
     Write-Host '    Deploys Office files only. Activation is up to you.' -ForegroundColor DarkGray

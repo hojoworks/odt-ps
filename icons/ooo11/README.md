@@ -21,7 +21,7 @@ licensed. A copy of the licence is kept at `LICENSE` in the repository root.
 
 **Changes made** (Apache License 2.0, section 4b): each icon was scaled to
 16×16 with a box filter, hard-edged (alpha thresholded at 50%), and quantised
-to the 16-colour Windows 3.1 palette the rest of the screen uses. The result is
+to the 16-colour Windows 9x palette the rest of the screen uses. The result is
 written into the `ooo11:start` … `ooo11:end` region of `site/index.html` as
 inline `<symbol>`s by:
 

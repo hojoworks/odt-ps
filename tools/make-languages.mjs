@@ -17,7 +17,7 @@ const SOURCE = "https://learn.microsoft.com/en-us/microsoft-365-apps/deploy/" +
   "overview-deploying-languages-microsoft-365-apps";
 
 const response = await fetch(SOURCE, {
-  headers: { "user-agent": "hojoworks-odt-generator/1.0 (+https://github.com/hojoworks/odt-ps)" }
+  headers: { "user-agent": "odt-ps/1.0 (+https://github.com/hojoworks/odt-ps)" }
 });
 if (!response.ok) { throw new Error("could not fetch the language table: " + response.status); }
 const html = await response.text();

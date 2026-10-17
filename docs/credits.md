@@ -6,11 +6,11 @@ Two sets, deliberately kept apart:
 
 **Drawn for this project (Apache 2.0, like the rest of the repository).** Nine symbols: the floppy, the three system buttons,
 the box, mail, people, cloud and phone, plus the two fallback shapes the row renderers keep for an unknown id. They are
-drawn on a 16×16 grid following Windows 3.1 conventions:
+drawn on a 16×16 grid following Windows 9x conventions:
 
 * one-pixel black outline around every shape
 * white highlight on the top/left edge, `#808080` shadow on the bottom/right edge
-* **only the 16-colour Windows 3.1 palette**:
+* **only the 16-colour Windows 9x palette**:
   `#000000 #800000 #008000 #808000 #000080 #800080 #008080 #c0c0c0 #808080 #ff0000 #00ff00 #ffff00 #0000ff #ff00ff #00ffff #ffffff`
 
 **Apache OpenOffice / OpenOffice.org 1.1 icons (Apache License 2.0).** Eighteen pictograms: six document types
@@ -47,7 +47,7 @@ blocks in `site/index.html`; nothing else depends on the artwork.
 
 ## The backdrop
 
-The setup screen's background follows Microsoft's own Windows 3.1 Setup screen, measured from a public-domain
+The setup screen's background follows Microsoft's own Windows 9x Setup screen, measured from a public-domain
 screenshot on Wikimedia Commons (`Win311002setup15.png`, 1024×768, 256-colour):
 
 * `#0000ff` in the top row, `#000000` in the bottom row, spread evenly over the whole height, about 24 steps,
@@ -70,5 +70,5 @@ anyone drawing one.
 * PowerShell scripts, landing page and stylesheet: Apache 2.0 (see [LICENSE](../LICENSE)).
 * Office Deployment Tool and the Office files themselves: downloaded from Microsoft at run time, and nothing is
   redistributed here.
-* "Windows 3.1" is a trademark of Microsoft Corporation. This project is not affiliated with or endorsed by
+* "Windows 9x" is a trademark of Microsoft Corporation. This project is not affiliated with or endorsed by
   Microsoft; the visual style is an homage.
