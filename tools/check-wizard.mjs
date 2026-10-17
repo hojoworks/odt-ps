@@ -309,6 +309,18 @@ verify("xml: a hostile build number is escaped and cannot open a second element"
   hostileXml.indexOf(hostileVersion) === -1,
   (hostileXml.match(/Version="[^"]*"/) || ["?"])[0]);
 
+/* 14c. Both OneDrive values are real, and they are different apps. Microsoft's
+   configuration reference lists OneDrive and Groove separately, its note there
+   says to use Groove for OneDrive, and its own how-to for excluding OneDrive
+   uses OneDrive. The page offers both, and both have to survive normalisation
+   and reach the XML. */
+const oneDriveXml = ODT.buildXml({ ...base, excludeApps: ["Groove", "OneDrive"] });
+verify("xml: both OneDrive values are kept, and emitted the way Microsoft documents",
+  ODT.normalize({ ...base, excludeApps: ["Groove", "OneDrive"] }).excludeApps.join(",") === "Groove,OneDrive" &&
+  oneDriveXml.indexOf('<ExcludeApp ID="Groove" />') !== -1 &&
+  oneDriveXml.indexOf('<ExcludeApp ID="OneDrive" />') !== -1,
+  (oneDriveXml.match(/<ExcludeApp ID="[A-Za-z]+" \/>/g) || []).join(" "));
+
 /* 15. The presets, and what each one leaves out. An ExcludeApp ID that is not a
    real app is ignored by some ODT versions and refused by others, so every
    preset is held to the app list itself rather than to a remembered name. */

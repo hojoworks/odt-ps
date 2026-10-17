@@ -193,7 +193,7 @@ ODT.apps = [
   { id: 'Publisher', name: 'Publisher', note: 'Print layouts', icon: 'i-shapes' },
   { id: 'Teams', name: 'Microsoft Teams', note: 'Chat and meetings', icon: 'i-people' },
   { id: 'Groove', name: 'OneDrive for Business', note: 'The old sync client', icon: 'i-cloud' },
-  { id: 'OneDrive', name: 'OneDrive desktop', note: 'The sync app', icon: 'i-cloud' },
+  { id: 'OneDrive', name: 'OneDrive desktop', note: 'Office installs this one. Windows ships a copy of its own, and excluding it here does not remove that one.', icon: 'i-cloud' },
   { id: 'Lync', name: 'Skype for Business', note: 'Calls', icon: 'i-phone' },
   { id: 'OutlookForWindows', name: 'new Outlook for Windows', note: 'Separate from Outlook', icon: 'i-mail' }
 ];
