@@ -10,28 +10,11 @@ This is an unofficial community tool. It is not affiliated with, or endorsed by,
 
 ![The setup screen](docs/screenshot.png)
 
-## The web page
-
-Nothing is ticked to start with, and nothing is stored. A refresh clears the choices, and the browser is asked to
-warn you first. Untick the version you picked and the page goes back to its untouched state.
-
-Four presets fill the whole form in: **Hojo's Choice**, **M365 Apps**, **M365 Apps + Project & Visio** and
-**LTSC ProPlus 2024**. The first installs Word, Excel and PowerPoint with Project and Visio. The other three install
-everything except the business apps: Teams, both OneDrives, Skype and new Outlook. Everything after that is optional.
-
-No build number, download size or release date is written into the page. Microsoft publishes new ones every month, so
-a figure typed into a web page is stale within weeks. Products, channels, languages and apps live in
-`site/odt-data.js`, where they are easy to correct.
-
 ## Installing
 
 The Install section offers three things.
 
 1. **Automatic Install**, one line that runs the installer with exactly your settings:
-
-   ```powershell
-   $env:ODT_ARGS='-Product O365ProPlusRetail -Languages en-us -ShowWindow -Download -Install -Silent'; irm https://hojoworks.github.io/odt-ps/get.ps1 | iex
-   ```
 
 2. **Manual Install**, a disclosure holding `configuration.xml`, to save or copy, and the Office Deployment Tool
    commands to run yourself.
@@ -69,8 +52,7 @@ parameter and nothing prompts, so the line drops straight into RMM and task sequ
 
 ## What it does not do
 
-No activation, no keys, no KMS emulation and no patching. No bundled binaries, since everything comes from Microsoft
-URLs at run time. No telemetry. Deploying Office is all this does, and activating it needs a licence you own.
+No activation and no bundled binaries. Everything comes from Microsoft URLs at run time. No telemetry. Deploying Office is all this does, and activating it needs a licence you own.
 
 ## If a copy button is blocked
 

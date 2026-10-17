@@ -105,8 +105,11 @@
 .rail-links a { color: #ffffff; }
 .rail-links a:hover { color: #ffff00; }
 
+/* The small print at the foot of the rail: the datestamp, then the two notices
+   each on a line of its own. The block's own gap spaces them, so nothing here
+   carries a margin that would double it up. */
 .rail-credit {
-  margin: var(--gap) 0 0;
+  margin: 0;
   color: var(--dark);
   font-size: 10px;
   line-height: 1.3;
