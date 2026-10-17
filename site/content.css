@@ -1,0 +1,81 @@
+/* The scrolling content column and the grey section boxes inside it. */
+
+/* ---------------------------------------------------------------- content */
+
+/* The content column is the scroller: sections move, the frame does not. The
+   content dissolves into the window face at each edge, the way a masked edge
+   reads on a modern screen, so it is obvious the area scrolls. */
+.setup-content {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  /* No padding at the foot: the sticky overlay can only reach the bottom of the
+     content box, so padding there would leave an unfaded strip. The last
+     section carries that gap as a margin instead. */
+  padding: 0 var(--gap);
+}
+
+/* The column is focused after a rail step, purely so Page Down scrolls the
+   sections: that needs no ring of its own. */
+.setup-content:focus { outline: none; }
+
+/* Sticky overlays rather than a mask on the scroller: the box sits inside the
+   content box, so it can never wash over the scrollbar beside it. */
+.setup-content::before,
+.setup-content::after {
+  content: "";
+  display: none;
+  position: sticky;
+  z-index: 3;
+  height: var(--scroll-fade);
+  pointer-events: none;
+}
+
+/* Face-coloured, heaviest at the edge it belongs to: it fades the content out
+   instead of darkening it. It only shows while there is more content that way. */
+.setup-content.has-above::before {
+  display: block;
+  top: 0;
+  margin-bottom: calc(-1 * var(--scroll-fade));
+  background-image: linear-gradient(rgba(192, 192, 192, 1), rgba(192, 192, 192, 0));
+}
+
+.setup-content.has-below::after {
+  display: block;
+  bottom: 0;
+  margin-top: calc(-1 * var(--scroll-fade));
+  background-image: linear-gradient(rgba(192, 192, 192, 0), rgba(192, 192, 192, 1));
+}
+
+.setup-section {
+  /* an anchored section lands clear of the edge fade, not inside it */
+  scroll-margin-top: calc(var(--scroll-fade) + 2px);
+  padding: var(--gap) 8px;
+  background: var(--face);
+}
+
+.setup-section + .setup-section { margin-top: var(--gap-section); }
+
+/* the breathing room the scroller used to carry as padding at its foot, kept
+   inside the content box so the edge fade reaches the very bottom */
+.setup-section:last-child { margin-bottom: var(--gap); }
+
+/* the flex gap in the spacing block below spaces it, so no margin here */
+/* the heading carries its own subtitle, on the same line: "Version: Which
+   Office you install." */
+.setup-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--dark);
+  font-size: 15px;
+}
+
+/* the note takes the rest of the line and wraps inside its own box, so it
+   always starts beside the title */
+.h2-note { min-width: 0; font-size: 12px; font-weight: 400; }
+
+.setup-section p { margin: 0 0 var(--gap); }
+

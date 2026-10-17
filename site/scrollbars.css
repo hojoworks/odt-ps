@@ -1,0 +1,94 @@
+/* Retro scrollbars, as on the reference dialog's list. */
+
+/* ---- retro scrollbars, as on the reference dialog's list ----
+   Chrome rounds the scrollbar parts by default; everything here is square.
+   Chrome only paints some properties on scrollbar pseudo-elements: a thumb
+   border kills the thumb entirely, so the look is built from colours plus
+   background images, which do render. */
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb,
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-track,
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button,
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-corner {
+  border-radius: 0;
+}
+
+/* Firefox cannot dither a scrollbar, so give it palette colours. The guard
+   matters: Chrome understands scrollbar-color and scrollbar-width too, and
+   specifying either makes it throw away every ::-webkit-scrollbar rule below --
+   which is exactly the bug that hid the chiselled bars. */
+@supports not selector(::-webkit-scrollbar) {
+  :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p) {
+    scrollbar-width: auto;
+    scrollbar-color: #c0c0c0 #ffffff;
+  }
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+/* the track carries the classic 2px 50% dither */
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-track {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3Crect width='1' height='1' fill='%23c0c0c0'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23c0c0c0'/%3E%3C/svg%3E");
+  background-size: 2px 2px;
+}
+
+/* The thumb is chiselled: white on the top and left, black on the bottom and
+   right, grey in between -- built from gradients, because a border on a
+   scrollbar thumb makes Chrome drop the thumb altogether. */
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  background-image:
+    linear-gradient(#ffffff, #ffffff),
+    linear-gradient(#ffffff, #ffffff),
+    linear-gradient(#000000, #000000),
+    linear-gradient(#000000, #000000);
+  background-position: top left, top left, bottom right, bottom right;
+  background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%;
+  background-repeat: no-repeat;
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb:hover {
+  background-color: #d4d4d4;
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb:active {
+  background-color: #a8a8a8;
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-corner { background-color: #c0c0c0; }
+
+/* arrow buttons: sunken grey squares with a small black pixel triangle. Each
+   arrow is 8x8 inside the 12x12 canvas, drawn at 2px so it stays crisp, and all
+   four directions are given: a box that scrolls sideways needs its arrows too. */
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: #c0c0c0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+  border: 2px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' shape-rendering='crispEdges'%3E%3Crect x='5' y='3' width='2' height='2' fill='%23000000'/%3E%3Crect x='4' y='5' width='4' height='2' fill='%23000000'/%3E%3Crect x='3' y='7' width='6' height='2' fill='%23000000'/%3E%3C/svg%3E");
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' shape-rendering='crispEdges'%3E%3Crect x='3' y='3' width='6' height='2' fill='%23000000'/%3E%3Crect x='4' y='5' width='4' height='2' fill='%23000000'/%3E%3Crect x='5' y='7' width='2' height='2' fill='%23000000'/%3E%3C/svg%3E");
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' shape-rendering='crispEdges'%3E%3Crect x='3' y='5' width='2' height='2' fill='%23000000'/%3E%3Crect x='5' y='4' width='2' height='4' fill='%23000000'/%3E%3Crect x='7' y='3' width='2' height='6' fill='%23000000'/%3E%3C/svg%3E");
+}
+
+:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' shape-rendering='crispEdges'%3E%3Crect x='7' y='5' width='2' height='2' fill='%23000000'/%3E%3Crect x='5' y='4' width='2' height='4' fill='%23000000'/%3E%3Crect x='3' y='3' width='2' height='6' fill='%23000000'/%3E%3C/svg%3E");
+}
+

@@ -1,0 +1,327 @@
+/* Buttons, check boxes, radios, fieldsets, the output boxes and the presets. */
+
+/* ---------------------------------------------------------------- widgets */
+
+.icon-defs { position: absolute; }
+
+.icon {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  shape-rendering: crispEdges;
+}
+
+.icon.sm { width: 16px; height: 16px; }
+.icon.md { width: 26px; height: 26px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-tight);
+  min-width: 80px;
+  padding: 4px 10px;
+  background: var(--face);
+  color: #000;
+  font: inherit;
+  font-size: 12px;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid;
+  border-color: var(--light) var(--darker) var(--darker) var(--light);
+  box-shadow: inset 1px 1px 0 var(--face), inset -1px -1px 0 var(--face);
+  cursor: pointer;
+}
+
+.btn:hover { border-color: var(--darker) var(--light) var(--light) var(--darker); }
+
+.btn:focus-visible { outline: 1px dotted #000; outline-offset: -5px; }
+
+.btn:active {
+  border-color: var(--darker) var(--light) var(--light) var(--darker);
+  box-shadow: none;
+  padding: 5px 9px 3px 11px;
+}
+
+.btn.primary { font-weight: 700; }
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  align-items: center;
+  margin-top: var(--gap);
+}
+
+.cmd-box {
+  margin-top: var(--gap);
+  max-width: 100%;
+  padding: 6px 8px;
+  background: #fff;
+  border: 2px solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+  overflow-x: auto;
+}
+
+.cmd-box code {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  white-space: pre;
+  color: #000;
+}
+
+.xml-box { max-height: 260px; overflow: auto; }
+
+.mini { font-size: 12px; }
+
+.dim { color: var(--dark); }
+
+.group {
+  margin: 0 0 var(--gap);
+  padding: var(--gap) 8px;
+  border: 1px solid var(--dark);
+}
+
+/* The group captions read as headings, so they carry the same weight as the
+   section headings. */
+.group > legend { padding: 0 5px; font-size: 12px; font-weight: 700; }
+
+input[type="checkbox"],
+input[type="radio"] {
+  position: relative;
+  flex: none;
+  width: 13px;
+  height: 13px;
+  margin: 1px 0 0;
+  background: #fff;
+  /* every edge has to be visible on white: dark on the top and left, grey on
+     the bottom and right, the way a Windows field is drawn */
+  border: 1px solid;
+  border-color: var(--darker) var(--dark) var(--dark) var(--darker);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="radio"] { border-radius: 50%; }
+
+/* The tick is a pixel-art background so it is centred exactly: a rotated border
+   shape never lines up in a 13px box. 11x11 is the padding box, so it draws 1:1,
+   and the tick's own box is 9x7 with an even margin on every side. */
+input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' shape-rendering='crispEdges'%3E%3Crect x='1' y='5' width='2' height='2' fill='%23000080'/%3E%3Crect x='2' y='6' width='2' height='2' fill='%23000080'/%3E%3Crect x='3' y='7' width='2' height='2' fill='%23000080'/%3E%3Crect x='4' y='6' width='2' height='2' fill='%23000080'/%3E%3Crect x='5' y='5' width='2' height='2' fill='%23000080'/%3E%3Crect x='6' y='4' width='2' height='2' fill='%23000080'/%3E%3Crect x='7' y='3' width='2' height='2' fill='%23000080'/%3E%3Crect x='8' y='2' width='2' height='2' fill='%23000080'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px 11px;
+}
+
+input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--navy);
+}
+
+input:focus-visible { outline: 1px dotted #000; outline-offset: 1px; }
+
+select,
+input[type="text"] {
+  padding: 2px 4px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-size: 12px;
+  border: 1px solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+}
+
+.check-list { margin: 0; padding: 0; list-style: none; }
+.check-list li { padding: 3px 0; }
+.check-list label { display: flex; gap: var(--gap); align-items: flex-start; cursor: pointer; }
+
+.inline-row { display: flex; flex-wrap: wrap; gap: var(--gap); align-items: center; margin-top: var(--gap); }
+
+.tip {
+  margin: var(--gap) 0 0;
+  padding: 7px 9px;
+  background: #ffff00;
+  border: 1px solid #000;
+  font-size: 12px;
+}
+
+.warn-list {
+  margin: 0 0 var(--gap);
+  padding: 6px 9px 6px 24px;
+  background: #ffff00;
+  border: 1px solid #000;
+  font-size: 12px;
+}
+
+.summary { border-collapse: collapse; margin-bottom: var(--gap); font-size: 12px; }
+.summary th { padding: 1px 12px 1px 0; text-align: left; vertical-align: top; white-space: nowrap; }
+.summary td { padding: 1px 0; vertical-align: top; }
+
+.build-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+/* Nothing to build yet: the same shape, greyed and inert, like the idle app
+   list -- visible so it is clear what will appear, dimmed so it is clear it has
+   not. */
+.build-cards.is-idle { opacity: 0.55; pointer-events: none; }
+
+.build-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--gap) 8px;
+  border: 1px solid;
+  border-color: var(--light) var(--dark) var(--dark) var(--light);
+  min-width: 0;
+}
+
+.build-card h3 { display: flex; align-items: center; gap: 5px; margin: 0 0 var(--gap-tight); font-size: 13px; }
+.build-card p { margin: 0 0 var(--gap); }
+
+/* The XML box is capped so its card stays a sensible height and the box scrolls
+   rather than the section growing without end. */
+.build-card > .xml-box { max-height: 150px; }
+
+/* a quieter caption for a block inside a section: no navy bar */
+.pick-group.quiet {
+  padding: 2px 5px;
+  background: none;
+  color: var(--navy);
+  text-transform: none;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+/* Disclosures (Advanced options, Manual Install) have to read as something you
+   can open: a caption bar with a triangle, a hover state, and the pointer. */
+.advanced > summary,
+.manual > summary,
+#s-notes summary { cursor: pointer; font-weight: 700; list-style: none; }
+.advanced > summary::-webkit-details-marker,
+.manual > summary::-webkit-details-marker { display: none; }
+.advanced > summary::before,
+.manual > summary::before { content: "\25B8  "; }
+.advanced[open] > summary::before,
+.manual[open] > summary::before { content: "\25BE  "; }
+
+.advanced > summary,
+.manual > summary {
+  padding: 3px 5px;
+  background: #e8e8e8;
+  border: 1px solid var(--light) var(--dark) var(--dark) var(--light);
+  font-size: 12px;
+  list-style: none;
+}
+.advanced > summary:hover,
+.manual > summary:hover { background: var(--navy); color: #ffffff; }
+.advanced > summary:focus-visible,
+.manual > summary:focus-visible { outline: 1px dotted #000000; outline-offset: -3px; }
+
+.advanced > div,
+.manual > .build-card { margin-top: var(--gap); }
+
+/* The rail sits on black, where the browser's own focus ring is hard to see. */
+.rail-steps .step:focus-visible,
+.rail-links a:focus-visible,
+.rail-links button:focus-visible { outline: 1px dotted #ffffff; outline-offset: -1px; }
+
+/* The status bar is a greeter: a sunken panel the height of the caption above
+   it, with one line of credits walking right to left inside it. The track holds
+   the line twice over, so travelling half its own width is exactly one whole
+   copy, the end of the walk is the same picture as the start, and the loop has
+   no seam. The duration is set from the script, which measures a copy, so the
+   line moves at the same speed however long the credits get; the one here is
+   only the shape of the motion and the fallback if the script never runs. */
+.setup-status {
+  flex: none;
+  padding: 3px 0 0;
+}
+
+.greeter {
+  position: relative;
+  height: var(--status-height);
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+  background: var(--face);
+}
+
+.greeter-track {
+  position: absolute;
+  top: 1px;
+  left: 0;
+  font: 11px/16px var(--mono);
+  white-space: nowrap;
+  will-change: transform;
+  animation: greeter-walk 60s linear infinite;
+}
+
+/* Half the track, which is the width of one copy of the line. */
+@keyframes greeter-walk {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ------------------------------------------------------------- spacing --
+   One spacing idea for the whole window. A section, and each body a section
+   renders into, is a flex column with a single gap, and the blocks they hold
+   carry no margins of their own -- so the space between two blocks is exactly
+   --gap, and the section's own padding closes it evenly whether the last block
+   is a list, a group or a paragraph. Nested content (cards, panes, groups,
+   the summary table) keeps its own spacing. */
+
+.setup-section,
+.setup-section > *[id$="-body"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.setup-section > *,
+.setup-section > p,
+.setup-section > *[id$="-body"] > *,
+.setup-section > *[id$="-body"] > p { margin: 0; }
+
+/* as wide as its content, not as wide as the column */
+.summary { align-self: start; }
+
+/* ------------------------------------------------------------- presets ---
+   Chiselled buttons, spread across the row. */
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: var(--gap);
+}
+
+.preset {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  background: var(--face);
+  color: #000;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border: 2px solid;
+  border-color: var(--light) var(--darker) var(--darker) var(--light);
+}
+
+.preset:active {
+  border-color: var(--darker) var(--light) var(--light) var(--darker);
+  padding: 7px 7px 5px 9px;
+}
+
+.preset-name { font-weight: 700; }
+.preset-note { color: var(--darker); font-size: 11px; }

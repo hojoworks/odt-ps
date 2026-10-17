@@ -1,0 +1,114 @@
+/* The dark rail down the side of the window: the section steps, the live
+   settings well and the two links. */
+
+/* ---------------------------------------------------------------- rail */
+
+.setup-rail {
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 8px;
+  /* the dark panel the setup screens used for their step lists */
+  background: var(--darker);
+  color: #c0c0c0;
+}
+
+.rail-block { margin-bottom: var(--gap); }
+
+/* The heading is just a label over the settings well: no rule of its own. */
+.rail-heading {
+  margin: 0 0 3px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rail-steps { margin: 0; padding: 0; list-style: none; font-size: 11.5px; }
+
+/* A generous gap and a hairline before each block after the first, so the steps,
+   the settings well and the links read as separate parts of the rail. The links
+   sit a little further off again. */
+.rail-block + .rail-block {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--dark);
+}
+
+.rail-block + .rail-block.rail-links {
+  margin-top: 26px;
+  padding-top: 18px;
+}
+
+.rail-links { display: flex; flex-direction: column; gap: 5px; font-size: 11px; }
+/* On the dark rail a navy link is nearly invisible, so these stay white until
+   they are hovered. */
+.rail-links a,
+.rail-links button {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-tight);
+  color: #ffffff;
+  /* a step and a link are both buttons here, so neither carries the browser's */
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- rail ---
+   A dark panel like the setup screens that inspired the page: the sections as
+   marked steps, a hairline, and the live settings in a boxed well. Still drawn
+   from the 16-colour palette. */
+
+.rail-steps li { margin-bottom: 1px; }
+
+/* The steps are buttons: they move the page, they do not name a place in it, so
+   nothing lands in the address bar. One line each, since the name says it. */
+.rail-steps .step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 3px 5px;
+  border: 0;
+  background: none;
+  color: #c0c0c0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rail-steps .step:hover { background: var(--navy); color: #fff; }
+
+.rail-steps li.current .step { background: var(--navy); color: #ffff00; }
+
+/* an inline jump inside a paragraph reads as a link, but is a button */
+.step-marker { flex: none; width: 10px; color: inherit; }
+.step-name { min-width: 0; font-weight: 700; }
+
+/* the live settings, in a boxed well with a white frame like the reference */
+.rail-settings {
+  margin: 0;
+  padding: 5px 6px;
+  font-size: 11px;
+  color: #fff;
+  background: var(--navy);
+  border: 1px solid #ffffff;
+}
+.rail-settings dt { color: #c0c0c0; font-weight: 700; margin-top: 4px; }
+.rail-settings dd { margin: 0; color: #ffffff; word-break: break-word; }
+.rail-settings dt:first-child { margin-top: 0; }
+
+.rail-links a { color: #ffffff; }
+.rail-links a:hover { color: #ffff00; }
+
+.rail-credit {
+  margin: var(--gap) 0 0;
+  color: var(--dark);
+  font-size: 10px;
+  line-height: 1.3;
+}
+

@@ -1,0 +1,88 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  # Nothing deploys unless the logic, the generated assets and the page itself
+  # all check out. See tools/*.mjs.
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Logic, XML and generated assets
+        run: node tools/check-wizard.mjs
+
+      # A failing check is echoed as an annotation, so the reason is readable
+      # from the run without downloading logs.
+      - name: Page behaviour in a real browser
+        run: |
+          set -o pipefail
+          status=0
+          node tools/browser-check.mjs 2>&1 | tee browser-check.log || status=$?
+          grep '^FAIL' browser-check.log | head -8 | while IFS= read -r line; do
+            echo "::error title=browser check::$line"
+          done || true
+          exit "$status"
+
+  deploy:
+    needs: checks
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # GitHub Pages has to be switched on once by hand. The default
+      # GITHUB_TOKEN cannot create the site, so fail fast with instructions
+      # instead of letting deploy-pages show a cryptic 404.
+      - name: Require GitHub Pages to be enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" > /dev/null 2>&1; then
+            echo "GitHub Pages is enabled."
+          else
+            echo "::error title=GitHub Pages is not enabled::Open Settings -> Pages -> Build and deployment -> Source: GitHub Actions, press Save, then re-run this workflow."
+            exit 1
+          fi
+
+      - name: Stage the installer with the site
+        run: |
+          cp get.ps1 site/get.ps1
+          cd site
+          sha256sum get.ps1 > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+        continue-on-error: true
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

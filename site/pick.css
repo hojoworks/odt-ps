@@ -1,0 +1,252 @@
+/* The classic "Select Components" panel: a white list of one-line rows, the
+   description pane beside it and the tally bars at its foot. */
+
+/* ---------------------------------------------------------------- icon list */
+
+/* ------------------------------------------------------- white pick list --
+   The classic "Select Components" panel: a white list of one-line rows with a
+   check box, a small pictogram, the name and a size on the right, plus a
+   description pane and a tally like the Windows 98 setup dialog. */
+
+.pick-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 236px;
+  /* the row height is the fixed list height, so the list box and the blocks
+     beside it are the same height by construction, not by their content */
+  grid-template-rows: var(--list-h);
+  gap: var(--gap);
+  align-items: stretch;
+}
+
+/* a list with only a few rows gets the short height instead */
+.pick-columns.short { grid-template-rows: var(--list-h-short); }
+/* the two boxes that must hold every row they can show: no scrollbar at rest */
+.pick-columns.version { grid-template-rows: var(--list-h-version); }
+.pick-columns.apps { grid-template-rows: var(--list-h-apps); }
+
+.pick-side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* The list box takes the whole row, like the classic dialog's list. */
+.pick-columns > div:first-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pick-columns > div:first-child .pick-list {
+  flex: 1 1 auto;
+  max-height: none;
+}
+
+/* The apps list before a version is picked: greyed but exactly the same size,
+   so nothing moves when it comes to life. */
+.pick-list.is-idle {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.pick-list.is-idle .pick { cursor: default; }
+
+.pick-list {
+  max-height: var(--list-h);
+  overflow: auto;
+  padding: 1px;
+  background: #ffffff;
+  border: 2px solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+}
+
+.pick {
+  display: grid;
+  grid-template-columns: 13px 16px minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+  min-height: 20px;
+  padding: 1px 4px;
+  cursor: pointer;
+  color: #000;
+}
+
+/* The highlight follows the keyboard as well as the mouse, so a row looks the
+   same whether you got to it by hovering or by tabbing. */
+.pick:hover,
+.pick:focus-within { background: var(--navy); color: #fff; }
+.pick:hover .pick-size,
+.pick:focus-within .pick-size { color: #c0c0c0; }
+
+/* On navy, dark-on-white controls vanish, so the box inverts: a white outline
+   with a white tick (or dot) inside, the way Windows' own lists drew it.
+   `background-color`, never the shorthand: the tick is a background image and
+   the shorthand would wipe it out, leaving an empty box on the highlighted row. */
+.pick:hover input[type="checkbox"]:not(:disabled),
+.pick:focus-within input[type="checkbox"]:not(:disabled),
+.pick:hover input[type="radio"]:not(:disabled),
+.pick:focus-within input[type="radio"]:not(:disabled) {
+  background-color: var(--navy);
+  border-color: #ffffff;
+}
+
+/* A navy tick on a navy box is just as invisible, so it turns white with it. */
+.pick:hover input[type="checkbox"]:checked,
+.pick:focus-within input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' shape-rendering='crispEdges'%3E%3Crect x='1' y='5' width='2' height='2' fill='%23ffffff'/%3E%3Crect x='2' y='6' width='2' height='2' fill='%23ffffff'/%3E%3Crect x='3' y='7' width='2' height='2' fill='%23ffffff'/%3E%3Crect x='4' y='6' width='2' height='2' fill='%23ffffff'/%3E%3Crect x='5' y='5' width='2' height='2' fill='%23ffffff'/%3E%3Crect x='6' y='4' width='2' height='2' fill='%23ffffff'/%3E%3Crect x='7' y='3' width='2' height='2' fill='%23ffffff'/%3E%3Crect x='8' y='2' width='2' height='2' fill='%23ffffff'/%3E%3C/svg%3E");
+}
+
+.pick:hover input[type="radio"]:checked::after,
+.pick:focus-within input[type="radio"]:checked::after { background: #ffffff; }
+
+.pick:hover input:focus-visible,
+.pick:focus-within input:focus-visible { outline-color: #ffffff; }
+
+/* Channel rows carry no pictogram: radio, name, build. */
+.pick.no-icon { grid-template-columns: 13px minmax(0, 1fr) auto; }
+
+/* A row that is only ever read: no control, just the name and its code. */
+.pick.plain { grid-template-columns: minmax(0, 1fr) auto; cursor: default; }
+
+/* The channel list sits under the description pane in the side column. */
+/* Only the description box flexes: the channel list and its caption keep their
+   size whatever the description text does, so the geometry never wobbles. */
+.pick-side > *:not(.pick-desc) { flex: none; }
+
+/* The language picker's side: a drop-down, then the extra languages fill what
+   is left of the column, level with the list beside it. */
+.pick-side > select { width: 100%; }
+.pick-side > .extra-list { flex: 1 1 auto; min-height: 0; max-height: none; }
+
+.pick-name { font-size: 12px; line-height: 20px; }
+.pick-size { font-size: 11px; color: var(--dark); white-space: nowrap; }
+
+.pick-group {
+  padding: 2px 5px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--navy);
+  background: #e8e8e8;
+}
+
+/* The long tail of products is a disclosure: shut it stays one caption high, so
+   the version list fits its box; opening it adds rows and the list scrolls.
+   `display: block` is what removes the browser's own summary triangle -- with it
+   gone, the only mark is the one drawn below, and the label keeps the caption's
+   weight rather than the bold a summary gets by default. */
+.pick-more > summary {
+  display: block;
+  font-weight: 400;
+  cursor: pointer;
+  list-style: none;
+}
+.pick-more > summary::-webkit-details-marker { display: none; }
+.pick-more > summary::marker { content: none; }
+.pick-more > summary:hover { background: var(--navy); color: #ffffff; }
+
+.more-mark {
+  display: inline-block;
+  vertical-align: middle;
+  width: 0;
+  height: 0;
+  margin-right: 6px;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+.pick-more[open] .more-mark { transform: rotate(90deg); }
+
+/* The description pane fills whatever height the column has, so it ends level
+   with the list beside it, and it still grows if the text needs more room. */
+.pick-desc {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  border: 1px solid var(--dark);
+  background: var(--face);
+}
+
+.pick-desc h4 {
+  margin: 0;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-weight: 400;
+  border-bottom: 1px solid var(--dark);
+}
+
+.pick-desc p {
+  flex: 1 1 auto;
+  margin: 0;
+  min-height: 44px;
+  padding: 5px 6px;
+  background: #fff;
+  font-size: 12px;
+  border: 2px solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+}
+
+/* The channel list is always the same height -- three rows, the most channels
+   any family offers -- whether it holds three radios or none, so picking a
+   version never moves the section. The add-on list works the same way at two
+   rows, the most Visio and Project ever need. */
+.pick-list.channel-list,
+.pick-list.addon-list {
+  height: var(--list-h-short);
+  max-height: var(--list-h-short);
+}
+
+.pick-list.addon-list {
+  height: var(--list-h-addons);
+  max-height: var(--list-h-addons);
+}
+
+/* The channel caption sits under the description box, which flexes above it. */
+.pick-side .pick-group { margin-top: var(--gap); }
+
+/* A short box gives the pane the room its text needs and nothing more: drop the
+   44px floor and the reserved scrollbar gutter, and never let the box grow a
+   scrollbar or an empty track of its own. The padding is a shade tighter here,
+   which is what lets a two-line note sit in a three-row box. */
+.pick-columns.short .pick-desc p:not(.pick-tally) {
+  min-height: 0;
+  padding: 4px 6px;
+  overflow: hidden;
+  scrollbar-gutter: auto;
+}
+
+/* The description text fills whatever height the box gives it, and scrolls if a
+   note is longer than that. The gutter is reserved so the text never reflows
+   when a scrollbar comes and goes. */
+.pick-desc p:not(.pick-tally) {
+  flex: 1 1 auto;
+  margin: 0;
+  min-height: 44px;
+  padding: 5px 6px;
+  background: #fff;
+  font-size: 12px;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  border: 2px solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+}
+
+/* The "N of M selected" bar: a small fixed strip at the foot of the box. It
+   never grows or shrinks with the text above it. */
+.pick-desc .pick-tally {
+  flex: none;
+  margin: var(--gap) 0 0;
+  padding: 1px 5px;
+  min-height: 0;
+  overflow: hidden;
+  color: #000;
+  background: var(--face);
+  font-size: 10px;
+  line-height: 14px;
+  border: 1px solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+}
+
