@@ -147,7 +147,11 @@ if (-not $PSCommandPath -and $env:ODT_ARGS -and $env:ODT_ARGS.Trim()) {
 
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $path) + $switches
 
-    if (-not $switches.Contains('-NoElevate') -and -not (Test-IsAdmin)) {
+    # Two doors to the same switch: the parameter, when this arrived as a file,
+    # and the token, when a piped line handed its settings over in the environment.
+    $noElevate = $NoElevate -or $switches.Contains('-NoElevate')
+
+    if (-not $noElevate -and -not (Test-IsAdmin)) {
         Write-Host '  Administrator rights are needed to install Office.' -ForegroundColor Yellow
         Write-Host '  Restarting in an elevated window...' -ForegroundColor Yellow
         try {
@@ -790,6 +794,9 @@ function Invoke-OdtSetup {
 
     $elapsed = (Get-Date) - $start
     $exitCode = $process.ExitCode
+    # The handle behind a Process object lives until it is let go of, and this one
+    # has been read for the last time.
+    $process.Dispose()
     if ($Measure) { $totals = Get-FolderTotals -Path $Folder }
     $finished = 'Finished in ' + $elapsed.ToString('mm\:ss') + ' with exit code ' + $exitCode
     if ($Measure -and $exitCode -eq 0) {

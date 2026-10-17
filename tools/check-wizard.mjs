@@ -269,6 +269,19 @@ verify("installer: every helper it calls is defined, or a cmdlet it may use",
 verify("installer: every helper it defines is called",
   installerDefined.every((name) => installerCalled.includes(name)),
   installerDefined.filter((name) => !installerCalled.includes(name)).join(", ") || "all used");
+/* Every setting the installer accepts has to be read somewhere: a parameter
+   that is declared and then ignored is worse than one that does not exist,
+   because it looks like it worked. */
+const paramBlock = installerSource.match(/param\(([\s\S]*?)\n\)/);
+const declaredParams = [...new Set([...(paramBlock ? paramBlock[1] : "")
+  .matchAll(/\$([A-Za-z]+)/g)].map((match) => match[1]))];
+const installerBody = installerSource.slice(installerSource.indexOf("\n)\n"));
+const unusedParams = declaredParams.filter((name) =>
+  !new RegExp("\\$" + name + "\\b").test(installerBody));
+verify("installer: every parameter it declares is read somewhere",
+  declaredParams.length >= 10 && unusedParams.length === 0,
+  unusedParams.join(", ") || declaredParams.length + " parameters, all read");
+
 verify("installer: no helper is defined twice",
   installerDefined.length === new Set(installerDefined).size,
   installerDefined.filter((name, index) => installerDefined.indexOf(name) !== index).join(", ") || installerDefined.length + " helpers");
@@ -282,6 +295,17 @@ verify("licence: Apache 2.0, with the attribution in NOTICE",
   licenceText.includes("Apache License") && licenceText.includes("Version 2.0") &&
   notice.includes("Copyright (c)") && notice.includes("OpenOffice.org"),
   licenceText.split("\n")[0]);
+
+/* 14b. Whatever the page lets you type has to stay inside its attribute. The build
+   version is the one free-text field, and it lands in the XML, so it is the one
+   place where a quote could open a second element. */
+const hostileVersion = '16.0.1" /><RemoveMSI /><x y="';
+const hostileXml = ODT.buildXml({ ...base, version: hostileVersion });
+verify("xml: a hostile build number is escaped and cannot open a second element",
+  hostileXml.indexOf('&quot; /&gt;&lt;RemoveMSI') !== -1 &&
+  hostileXml.split("<RemoveMSI").length === 2 &&
+  hostileXml.indexOf(hostileVersion) === -1,
+  (hostileXml.match(/Version="[^"]*"/) || ["?"])[0]);
 
 /* 15. The presets, and what each one leaves out. An ExcludeApp ID that is not a
    real app is ignored by some ODT versions and refused by others, so every
