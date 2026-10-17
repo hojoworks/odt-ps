@@ -173,6 +173,7 @@ window.ODT = window.ODT || {};
     if (state.version) { parts.push('-Version ' + state.version); }
     if (state.excludeApps.length) { parts.push('-Exclude ' + state.excludeApps.join(',')); }
     if (state.displayLevel === 'Full') { parts.push('-ShowWindow'); }
+    if (state.keepFiles) { parts.push('-KeepFiles'); }
     return parts.concat(ending).join(' ');
   };
 
@@ -209,6 +210,7 @@ window.ODT = window.ODT || {};
     if (state.deviceBased) { options.push('device-based licensing'); }
     if (!state.keepUpdated) { options.push('updates disabled'); }
     if (state.displayLevel === 'Full') { options.push('show the install dialog'); }
+    if (state.keepFiles) { options.push('keep the downloaded files'); }
     rows.push(['Options', options.length ? options.join('; ') : 'defaults']);
 
     return rows;

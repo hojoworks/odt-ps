@@ -31,6 +31,9 @@
     sharedComputer: false,
     deviceBased: false,
     keepUpdated: true,
+    /* The ODT folder is removed after a successful install unless this is asked
+       for: several GB of files nobody needs twice. */
+    keepFiles: false,
     /* The setup window is shown: a silent install is the exception, not the
        default, so nothing happens behind your back. */
     displayLevel: "Full",

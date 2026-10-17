@@ -78,7 +78,7 @@
       function () { return sections.languages(); });
 
     renderSection("options", JSON.stringify([state.removeMsi, state.removeExisting, state.sharedComputer,
-      state.deviceBased, state.keepUpdated, state.displayLevel]),
+      state.deviceBased, state.keepUpdated, state.displayLevel, state.keepFiles]),
       function () { return sections.options(current); });
 
     renderSection("install", JSON.stringify(current),

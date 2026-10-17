@@ -378,7 +378,8 @@
       ["keepUpdated", "Keep Office updated automatically", ""],
       ["sharedComputer", "Shared computer licensing", "Remote Desktop or multi-user PCs"],
       ["deviceBased", "Device-based licensing", "365 Apps only"],
-      ["displayLevelFull", "Show the installer window", "untick to install silently"]
+      ["displayLevelFull", "Show the installer window", "untick to install silently"],
+  ["keepFiles", "Keep the downloaded files", "at the end the ODT folder is removed"]
     ].forEach(function (row) {
       var key = row[0];
       var checked = key === "displayLevelFull" ? state.displayLevel === "Full" : !!state[key];

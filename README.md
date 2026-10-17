@@ -40,7 +40,8 @@ The Install section offers three things.
 
 The installer fetches the Office Deployment Tool from Microsoft, writes `configuration.xml` from your settings, then
 runs `setup.exe /download` and/or `/configure`. It reports the exit code and the log path, and the ODT writes its
-logs to `%temp%`.
+logs to `%temp%`. A successful install then removes the folder it filled, because several GB of files nobody needs
+twice is only space. Tick **Keep the downloaded files** under Advanced options, or pass `-KeepFiles`, to keep them.
 
 It also has a Remove Office mode, which uninstalls every Click-to-Run product it finds.
 
@@ -61,6 +62,7 @@ the line yourself.
 | `-RemoveAll` | Uninstall every Click-to-Run product on the machine |
 | `-ShowWindow` | Show Microsoft's setup window instead of installing silently |
 | `-Silent` | Never prompt |
+| `-KeepFiles` | Keep the downloaded files instead of removing them when the install is done |
 
 The exit code is `0` on success, the ODT's own code when setup fails, and `1` on a bad argument. Every setting is a
 parameter and nothing prompts, so the line drops straight into RMM and task sequences.

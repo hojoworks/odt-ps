@@ -63,7 +63,27 @@ export async function run(ctx) {
   check("one-liner sets ODT_ARGS and pipes get.ps1",
     /^\$env:ODT_ARGS='-Product O365ProPlusRetail -Languages en-us -ShowWindow -Download -Install -Silent'; irm https?:\/\/\S+\/get\.ps1 \| iex$/.test(outputs.oneLiner),
     outputs.oneLiner);
-  check("the default XML matches the builder", outputs.consistent === true);
+  /* The advanced option that keeps the files: off to start with, and ticking it
+   reaches the state the command is built from. */
+const keep = await evaluate(client,
+  "(function () {" +
+  "  var boxes = Array.prototype.slice.call(document.querySelectorAll('#options-body input'));" +
+  "  var box = boxes.filter(function (input) {" +
+  "    var label = input.closest('label');" +
+  "    return label && label.textContent.indexOf('Keep the downloaded files') === 0;" +
+  "  })[0];" +
+  "  if (!box) { return { found: false }; }" +
+  "  var before = box.checked;" +
+  "  box.click();" +
+  "  var after = window.SETUP.api.state().keepFiles;" +
+  "  box.click();" +
+  "  return { found: true, before: before, after: after, restored: box.checked };" +
+  "})()");
+check("the keep-the-files option is off by default and reaches the state when ticked",
+  keep.found === true && keep.before === false && keep.after === true &&
+  keep.restored === false, JSON.stringify(keep));
+
+check("the default XML matches the builder", outputs.consistent === true);
   check("the summary lists the configuration and the outputs offered are the line, the file and the tool",
     outputs.summaryRows === 8 && outputs.exportLine === null && outputs.odtLink &&
     outputs.odtCommands.indexOf("setup.exe /configure configuration.xml") !== -1, JSON.stringify(outputs));

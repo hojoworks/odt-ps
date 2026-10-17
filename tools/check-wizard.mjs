@@ -136,6 +136,9 @@ check("command: typical", ODT.buildCommand(base),
   ".\\get.ps1 -Product O365ProPlusRetail -Languages en-us -Download -Install -Silent");
 check("command: a shown setup window is asked for", ODT.buildCommand({ ...base, displayLevel: "Full" }),
   ".\\get.ps1 -Product O365ProPlusRetail -Languages en-us -ShowWindow -Download -Install -Silent");
+check("command: keeping the downloaded files is asked for",
+  ODT.buildCommand({ ...base, keepFiles: true }),
+  ".\\get.ps1 -Product O365ProPlusRetail -Languages en-us -KeepFiles -Download -Install -Silent");
 check("command: the XML carries the display level",
   ODT.buildXml({ ...base, displayLevel: "Full" }).includes('<Display Level="Full" AcceptEULA="TRUE" />'), true);
 check("command: custom bits", ODT.buildCommand({
@@ -258,7 +261,7 @@ const installerCalled = [...new Set([...installerSource.matchAll(
   /(?:^\s*|[|{;(=,]\s*)([A-Z][a-zA-Z]+-[A-Z][a-zA-Z0-9]+)\b/gm)].map((match) => match[1]))];
 const installerBuiltins = new Set(["Clear-Host", "ForEach-Object", "Get-ChildItem", "Get-Date",
   "Get-ItemProperty", "Get-Process", "Invoke-WebRequest", "Join-Path", "New-Item", "New-Object",
-  "Out-Null", "Out-String", "Read-Host", "Select-Object", "Sort-Object", "Split-Path",
+  "Out-Null", "Out-String", "Read-Host", "Remove-Item", "Select-Object", "Sort-Object", "Split-Path",
   "Start-Sleep", "Start-Process", "Stop-Process", "Test-Path", "Where-Object", "Write-Host"]);
 verify("installer: every helper it calls is defined, or a cmdlet it may use",
   installerCalled.every((name) => installerDefined.includes(name) || installerBuiltins.has(name)),

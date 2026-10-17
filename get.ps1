@@ -72,17 +72,23 @@ param(
 
     # Show Microsoft's setup window instead of installing silently. The site's
     # one-liner passes this when the display level is Full there.
-    [switch]$ShowWindow
+    [switch]$ShowWindow,
+
+    # Keep the downloaded files instead of removing them when the install is done.
+    [switch]$KeepFiles
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Whether the caller named the folder: one they named is not ours to delete.
+$script:FolderNamed = $PSBoundParameters.ContainsKey('OdtFolder')
 $ProgressPreference = 'SilentlyContinue'
 
 # ---------------------------------------------------------------------------
 # Script state
 # ---------------------------------------------------------------------------
 
-$script:ToolVersion = '1.0.1'
+$script:ToolVersion = '1.0.2'
 $script:SiteUrl = 'https://hojoworks.github.io/odt-ps/'
 $script:SilentMode = [bool]$Silent
 # Whether the caller named the channel or the edition: if they did, an invalid
@@ -805,6 +811,36 @@ function Invoke-OdtSetup {
 # Wizard steps
 # ---------------------------------------------------------------------------
 
+# Removing what a successful install leaves behind. It stays when the caller asked
+# for it, when the folder is one the caller named, when the run only exported or
+# only downloaded, and when anything failed.
+function Remove-OdtFiles {
+    $folder = $script:Session.OdtFolder
+    if ($KeepFiles) {
+        Write-Dim ('Downloaded files kept in ' + $folder + ' because -KeepFiles was given.')
+        return
+    }
+    if ($script:FolderNamed) {
+        Write-Dim ('Downloaded files kept in ' + $folder + ' because you named that folder.')
+        return
+    }
+    if (-not (Test-Path -LiteralPath (Join-Path $folder 'configuration.xml'))) {
+        Write-Dim 'Nothing left to clean up.'
+        return
+    }
+    if ($folder.TrimEnd('\').Length -le 3) {
+        Write-Warn ('Not removing ' + $folder + ': that is a drive root.')
+        return
+    }
+    try {
+        Remove-Item -LiteralPath $folder -Recurse -Force -ErrorAction Stop
+        Write-Ok ('Removed the downloaded files from ' + $folder + '.')
+    } catch {
+        Write-Warn ('Could not remove ' + $folder + ': ' + $_.Exception.Message)
+        Write-Dim 'The install itself finished, so this is only about disk space.'
+    }
+}
+
 function Invoke-Deploy {
     param([string]$Action)
 
@@ -937,7 +973,12 @@ function Invoke-Headless {
     elseif ($Install) { $action = 'install' }
     else { $action = 'download+install' }
 
-    return (Invoke-Deploy -Action $action)
+    # A successful install has no further use for the files, so the folder goes,
+    # unless the run was a download on its own, which means the files were the point.
+    $installs = $Install -or (-not $Download -and -not $Install)
+    $code = Invoke-Deploy -Action $action
+    if ($code -eq 0 -and $installs) { Remove-OdtFiles }
+    return $code
 }
 
 # ---------------------------------------------------------------------------
