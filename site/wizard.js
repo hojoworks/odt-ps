@@ -13,16 +13,38 @@
   var toggleInArray = core.toggleInArray, buildOneLiner = core.buildOneLiner;
 
 
+  function paneFor(node) {
+    var columns = node && node.closest ? node.closest(".pick-columns") : null;
+    return columns ? columns.querySelector(".pick-desc p") : null;
+  }
+
+  /* Pointing at a row shows what that row would do. */
   function updateDescription(event) {
     var target = event.target;
     if (!target.closest) { return; }
     var pick = target.closest(".pick");
     if (!pick) { return; }
-    var columns = pick.closest(".pick-columns");
-    var pane = columns && columns.querySelector(".pick-desc p");
+    var pane = paneFor(pick);
     if (!pane || pane.hasAttribute("data-fixed")) { return; }
     var note = pick.getAttribute("data-note");
     if (note) { pane.textContent = note; }
+  }
+
+  /* Leaving the list puts the pane back to the row that is actually chosen, which
+     is what render remembered as its default. A pane still describing the last
+     row you happened to skim is a pane telling you something untrue about the
+     settings you are about to install. */
+  function restoreDescription(event) {
+    var target = event.target;
+    if (!target.closest) { return; }
+    var pick = target.closest(".pick");
+    if (!pick) { return; }
+    var to = event.relatedTarget;
+    var columns = pick.closest(".pick-columns");
+    if (to && columns && columns.contains(to)) { return; }
+    var pane = paneFor(pick);
+    if (!pane || pane.hasAttribute("data-fixed")) { return; }
+    pane.textContent = pane.getAttribute("data-default") || pane.textContent;
   }
 
   /* ------------------------------------------------------------- sections */
@@ -83,6 +105,22 @@
 
     renderSection("install", JSON.stringify(current),
       function () { return sections.install(current); });
+
+    /* A list of radios has one row chosen, and the pane belongs to it: what the
+       builders wrote is only a starting point, the chosen row's note is the truth.
+       That is also what the pane goes back to when the pointer leaves the list.
+       Checkbox lists are left alone, since they have many rows ticked at once and
+       the pane there is a running tally instead. */
+    Array.prototype.forEach.call(document.querySelectorAll(".pick-columns"), function (columns) {
+      var pane = columns.querySelector(".pick-desc p");
+      if (!pane || pane.hasAttribute("data-fixed")) { return; }
+      if (columns.querySelector("input[type=radio]")) {
+        var chosen = columns.querySelector(".pick input:checked");
+        var note = chosen ? chosen.closest(".pick").getAttribute("data-note") : "";
+        if (note) { pane.textContent = note; }
+      }
+      pane.setAttribute("data-default", pane.textContent);
+    });
 
     rail.render(current);
   }
@@ -221,6 +259,8 @@
     elements.window.addEventListener("click", onClick);
     elements.window.addEventListener("mouseover", updateDescription);
     elements.window.addEventListener("focusin", updateDescription);
+    elements.window.addEventListener("mouseout", restoreDescription);
+    elements.window.addEventListener("focusout", restoreDescription);
     /* toggling a <details> does not bubble, so catch it on the way down */
     elements.window.addEventListener("toggle", function (event) {
       if (event.target && event.target.classList &&

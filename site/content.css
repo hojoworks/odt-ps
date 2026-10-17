@@ -54,6 +54,15 @@
   background: var(--face);
 }
 
+/* The section where the page pays off. It is the one section drawn as a raised
+   panel, and its heading is a size up from the rest, so the eye lands there
+   before it lands on the choices above. Nothing else about it changes. */
+#s-install {
+  box-shadow: inset 2px 2px 0 var(--light), inset -2px -2px 0 var(--dark);
+}
+
+#s-install h2 { font-size: 17px; }
+
 .setup-section + .setup-section { margin-top: var(--gap-section); }
 
 /* the breathing room the scroller used to carry as padding at its foot, kept

@@ -93,12 +93,34 @@ export async function run(ctx) {
   check("app list is compact with icons and a tally, and all twelve rows fit",
     pickLists.apps.rows === 12 && pickLists.apps.rowHeight <= 24 && pickLists.apps.icon === 16 &&
     pickLists.apps.scrolls === false &&
-    pickLists.apps.tally === "Nothing is excluded.", JSON.stringify(pickLists.apps));
+    pickLists.apps.tally === "Nothing is excluded." &&
+  pickLists.apps.size === "", JSON.stringify(pickLists.apps));
   check("edition holds only the edition, and the build is its own section of radios",
     pickLists.editionChoices === 2 && pickLists.editionDefault === "64" &&
     pickLists.editionHasBuild === 0 && pickLists.buildChoices === 3 &&
     pickLists.buildRadios === 3 && pickLists.buildTicked === 1 && pickLists.buildPane === true &&
     pickLists.legendsBold === true, JSON.stringify(pickLists));
+  /* Hovering a build shows its description; leaving the list puts back the one
+     belonging to the build that is ticked. */
+  const paneBack = await evaluate(client,
+    "(function () {" +
+    "  var section = document.getElementById('s-build');" +
+    "  var rows = section.querySelectorAll('.pick');" +
+    "  var pane = section.querySelector('.pick-desc p');" +
+    "  var checked = section.querySelector('.pick input:checked');
+  var chosen = checked ? checked.closest('.pick').getAttribute('data-note') : null;" +
+    "  var other = Array.prototype.filter.call(rows, function (row) {" +
+    "    return !row.querySelector('input').checked; }) [0];" +
+    "  other.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));" +
+    "  var hovered = pane.textContent;" +
+    "  other.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, relatedTarget: section }));" +
+    "  return { chosen: chosen, hovered: hovered, restored: pane.textContent," +
+    "           differs: hovered !== chosen };" +
+    "})()");
+  check("a description pane returns to the chosen row when the pointer leaves",
+    paneBack.differs === true && paneBack.hovered === paneBack.other &&
+    paneBack.restored === paneBack.chosen, JSON.stringify(paneBack));
+
   check("Add Additional Applications is its own block in Apps, styled like the app list",
     pickLists.addonsInApps === 2 && pickLists.addonListStyled === true &&
     pickLists.addonListHeight === 50,

@@ -282,8 +282,7 @@
           name: entry.name,
           note: "Pick a version first.",
           icon: entry.icon || "i-doc",
-          size: "ExcludeApp " + entry.id,
-          /* the greyed list still shows what would be left out by default */
+              /* the greyed list still shows what would be left out by default */
           data: 'data-app="' + entry.id + '"' +
             (state.excludeApps.indexOf(entry.id) === -1 ? " checked" : "") + " disabled"
         });
@@ -304,8 +303,7 @@
           name: entry.name,
           note: entry.note,
           icon: entry.icon || "i-doc",
-          size: "ExcludeApp " + entry.id,
-          data: 'data-app="' + entry.id + '"' + (isIncluded ? " checked" : "")
+              data: 'data-app="' + entry.id + '"' + (isIncluded ? " checked" : "")
         });
       });
 
