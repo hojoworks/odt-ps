@@ -444,10 +444,10 @@ const DRAWN = [
 ];
 
 /* The small marks the page itself needs: the checkbox tick and radio dot in
-   both their colours, the four arrows (scrollbar buttons, the language
-   drop-down and the disclosure markers), and the diamond that marks a rail
-   step. They are drawn the same way as the five above, at the size they are
-   used, so a tick is never a scaled-down 16px drawing. */
+   both their colours, and the four arrows (scrollbar buttons, the language
+   drop-down and the disclosure markers). They are drawn the same way as the
+   five above, at the size they are used, so a tick is never a scaled-down 16px
+   drawing. */
 const ORNAMENTS = [
   { id: "i-tick", size: 11, rows: [
     "...........",
@@ -530,18 +530,6 @@ const ORNAMENTS = [
     "............",
     "............",
     "............"
-  ] },
-  { id: "i-step", size: 10, rows: [
-    ".....0....",
-    "....000...",
-    "...00000..",
-    "..0000000.",
-    ".000000000",
-    ".000000000",
-    "..0000000.",
-    "...00000..",
-    "....000...",
-    ".........."
   ] },
   { id: "i-dot", size: 7, rows: [
     "..444..",

@@ -133,6 +133,7 @@
   background-image: url("icons.png");
   background-repeat: no-repeat;
   background-position: var(--i-arrow-down);
+  image-rendering: pixelated;
   pointer-events: none;
 }
 .pick-side > .extra-list { flex: 1 1 auto; min-height: 0; max-height: none; }
@@ -180,6 +181,7 @@
   mask-repeat: no-repeat;
   -webkit-mask-position: var(--i-arrow-right);
   mask-position: var(--i-arrow-right);
+  image-rendering: pixelated;
 }
 .pick-more[open] .more-mark { transform: rotate(90deg); }
 

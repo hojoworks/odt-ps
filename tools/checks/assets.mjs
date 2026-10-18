@@ -23,28 +23,26 @@ export async function run(ctx) {
     sprite.rendering === "pixelated" && sprite.symbols === 0, JSON.stringify(sprite));
 
   /* The marks with no class of their own reach for the same positions as a
-     custom property, so a checked box, a radio dot and a rail step are drawn
-     from the sheet rather than a second copy of the artwork. */
+     custom property, so a checked box and a radio dot are drawn from the sheet
+     rather than a second copy of the artwork. */
   const marks = await evaluate(client,
     "(function () {" +
     "  var tick = document.querySelector('#apps-body input[type=checkbox]:checked');" +
     "  var dot = document.querySelector('#edition-body input[type=radio]:checked');" +
-    "  var step = document.querySelector('.step-marker');" +
-    "  var t = getComputedStyle(tick), s = getComputedStyle(step);" +
+    "  var t = getComputedStyle(tick);" +
     "  var d = getComputedStyle(dot, '::after');" +
     "  var root = getComputedStyle(document.documentElement);" +
-    "  var mask = s.maskImage || s.webkitMaskImage || '';" +
     "  return { tickImage: t.backgroundImage.indexOf('icons.png') !== -1," +
+    "           tickHard: t.imageRendering," +
     "           tick: t.backgroundPosition, tickVar: root.getPropertyValue('--i-tick').trim()," +
     "           dotImage: d.backgroundImage.indexOf('icons.png') !== -1," +
-    "           dot: d.backgroundPosition, dotVar: root.getPropertyValue('--i-dot').trim()," +
-    "           stepMask: mask.indexOf('icons.png') !== -1," +
-    "           step: (s.maskPosition || s.webkitMaskPosition), stepVar: root.getPropertyValue('--i-step').trim() };" +
+    "           dotHard: d.imageRendering," +
+    "           dot: d.backgroundPosition, dotVar: root.getPropertyValue('--i-dot').trim() };" +
     "})()");
-  check("the sheet also draws the checkbox tick, the radio dot and the rail marker",
-    marks.tickImage && marks.tick === marks.tickVar &&
-    marks.dotImage && marks.dot === marks.dotVar &&
-    marks.stepMask && marks.step === marks.stepVar, JSON.stringify(marks));
+  check("the sheet also draws the checkbox tick and the radio dot, left hard",
+    marks.tickImage && marks.tick === marks.tickVar && marks.tickHard === "pixelated" &&
+    marks.dotImage && marks.dot === marks.dotVar && marks.dotHard === "pixelated",
+    JSON.stringify(marks));
 
   /* ---- dithered backdrop ---- */
   const backdrop = await evaluate(client,

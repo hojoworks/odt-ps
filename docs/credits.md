@@ -4,10 +4,10 @@
 
 Two sets, deliberately kept apart:
 
-**Drawn for this project (Apache 2.0, like the rest of the repository).** Fourteen cells in the sheet: the three
+**Drawn for this project (Apache 2.0, like the rest of the repository).** Thirteen cells in the sheet: the three
 system buttons on the caption; the two fallback shapes the row renderers keep for an unknown id, a box and an
-envelope; the checkbox tick and the radio dot, each in its normal and inverted colours; the four arrows (the
-scrollbar buttons and the language drop-down); and the diamond that marks a step in the rail. The floppy is not
+envelope; the checkbox tick and the radio dot, each in its normal and inverted colours; and the four arrows (the
+scrollbar buttons, the language drop-down and the disclosure markers). The floppy is not
 drawn: it comes from the OpenOffice.org artwork below. The larger shapes are drawn on the 16×16 grid following
 Windows 9x conventions:
 
@@ -16,7 +16,7 @@ Windows 9x conventions:
 * **only the 16-colour Windows 9x palette**:
   `#000000 #800000 #008000 #808000 #000080 #800080 #008080 #c0c0c0 #808080 #ff0000 #00ff00 #ffff00 #0000ff #ff00ff #00ffff #ffffff`
 
-The tick, the dot, the arrows and the rail diamond are solid marks from the same palette, drawn at the 7-12px size
+The tick, the dot and the arrows are solid marks from the same palette, drawn at the 7-12px size
 they are used, so none of them is a scaled-down copy.
 
 **Apache OpenOffice / OpenOffice.org 1.1 icons (Apache License 2.0).** Twenty-one pictograms: six document types

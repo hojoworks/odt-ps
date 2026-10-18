@@ -113,6 +113,9 @@ input[type="checkbox"]:checked {
   background-image: url("icons.png");
   background-repeat: no-repeat;
   background-position: var(--i-tick);
+  /* the cell is a bitmap, so at a fractional display scale it has to be left
+     hard: without this the browser interpolates it and the tick goes soft */
+  image-rendering: pixelated;
 }
 
 input[type="radio"]:checked::after {
@@ -125,6 +128,7 @@ input[type="radio"]:checked::after {
   background-image: url("icons.png");
   background-repeat: no-repeat;
   background-position: var(--i-dot);
+  image-rendering: pixelated;
 }
 
 input:focus-visible,
@@ -237,6 +241,7 @@ select {
   mask-repeat: no-repeat;
   -webkit-mask-position: var(--i-arrow-right);
   mask-position: var(--i-arrow-right);
+  image-rendering: pixelated;
 }
 .advanced[open] > summary::before,
 .manual[open] > summary::before { transform: rotate(90deg); }
