@@ -771,9 +771,9 @@ function Invoke-OdtSetup {
             if ($Measure) {
                 $text += '   ' + (Format-Size -Bytes $totals.Bytes) + ' in ' +
                     $totals.Files + ' files'
-                $minutes = [Math]::Max($elapsed.TotalMinutes, 0.05)
-                $rate = ($totals.Bytes - $startedAt.Bytes) / 1MB / $minutes
-                if ($rate -gt 1) { $text += '   ' + [Math]::Round($rate) + ' MB/min' }
+                $seconds = [Math]::Max($elapsed.TotalSeconds, 0.5)
+                $rate = ($totals.Bytes - $startedAt.Bytes) / 1MB / $seconds
+                if ($rate -gt 0.05) { $text += '   ' + [Math]::Round($rate, 1) + ' MB/s' }
             }
             $text += '   ' + $elapsed.ToString('mm\:ss')
             Write-Host ("`r" + $text.PadRight(78)) -NoNewline -ForegroundColor Cyan
