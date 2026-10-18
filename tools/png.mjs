@@ -2,7 +2,7 @@
  * of the format. Only what our own assets need: 8-bit, non-interlaced, and the
  * five colour types, all of them landing on one RGBA grid.
  */
-import { inflateSync } from "node:zlib";
+import { deflateSync, inflateSync } from "node:zlib";
 
 const SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
@@ -85,4 +85,57 @@ export function decodePng(data) {
     rgba[i * 4] = r; rgba[i * 4 + 1] = g; rgba[i * 4 + 2] = b; rgba[i * 4 + 3] = a;
   }
   return { width: header.width, height: header.height, pixels: rgba };
+}
+
+/* --------------------------------------------------------------- writing -- */
+
+const CRC_TABLE = (() => {
+  const table = new Int32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let bit = 0; bit < 8; bit++) { c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; }
+    table[n] = c;
+  }
+  return table;
+})();
+
+function crc32(buffer) {
+  let c = 0xffffffff;
+  for (const byte of buffer) { c = CRC_TABLE[(c ^ byte) & 0xff] ^ (c >>> 8); }
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+function chunk(type, body) {
+  const head = Buffer.alloc(8);
+  head.writeUInt32BE(body.length, 0);
+  head.write(type, 4, "ascii");
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(Buffer.concat([Buffer.from(type, "ascii"), body])), 0);
+  return Buffer.concat([head, body, crc]);
+}
+
+/* A palette PNG, one byte a pixel, with index 0 transparent. The sheet needs the
+   transparency because its icons sit on grey sections, white lists and a navy
+   rail in turn, so there is no one colour to paint them onto. */
+export function encodePalettePng({ width, height, colours, indices, transparent }) {
+  if (colours.length > 255) { throw new Error("a palette of " + colours.length + " will not fit"); }
+  const rows = Buffer.alloc(height * (1 + width));
+  let at = 0;
+  for (let y = 0; y < height; y++) {
+    rows[at++] = 0;                                        /* filter: none */
+    for (let x = 0; x < width; x++) { rows[at++] = indices[y * width + x]; }
+  }
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8;                                           /* a byte a pixel */
+  header[9] = 3;                                           /* palette */
+  const palette = Buffer.concat([
+    Buffer.from([0, 0, 0]),
+    Buffer.from(colours.flat())
+  ]);
+  const parts = [SIGNATURE, chunk("IHDR", header), chunk("PLTE", palette)];
+  if (transparent) { parts.push(chunk("tRNS", Buffer.from([0]))); }
+  parts.push(chunk("IDAT", deflateSync(rows)), chunk("IEND", Buffer.alloc(0)));
+  return Buffer.concat(parts);
 }
