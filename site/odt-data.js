@@ -188,13 +188,13 @@ ODT.apps = [
   { id: 'Excel', name: 'Excel', note: 'Spreadsheets', icon: 'i-grid' },
   { id: 'PowerPoint', name: 'PowerPoint', note: 'Slides', icon: 'i-slide' },
   { id: 'Outlook', name: 'Outlook', note: 'Mail and calendar', icon: 'i-mail' },
-  { id: 'OneNote', name: 'OneNote', note: 'Notes', icon: 'i-text-16' },
+  { id: 'OneNote', name: 'OneNote', note: 'Notes', icon: 'i-paste-16' },
   { id: 'Access', name: 'Access', note: 'Databases', icon: 'i-db' },
   { id: 'Publisher', name: 'Publisher', note: 'Print layouts', icon: 'i-shapes' },
-  { id: 'Teams', name: 'Microsoft Teams', note: 'Chat and meetings', icon: 'i-people' },
-  { id: 'Groove', name: 'OneDrive for Business', note: 'The old sync client', icon: 'i-cloud' },
-  { id: 'OneDrive', name: 'OneDrive desktop', note: 'Office installs this one. Windows ships a copy of its own, and excluding it here does not remove that one.', icon: 'i-cloud' },
-  { id: 'Lync', name: 'Skype for Business', note: 'Calls', icon: 'i-phone' },
+  { id: 'Teams', name: 'Microsoft Teams', note: 'Chat and meetings', icon: 'i-text-16' },
+  { id: 'Groove', name: 'OneDrive for Business', note: 'The old sync client', icon: 'i-align-16' },
+  { id: 'OneDrive', name: 'OneDrive desktop', note: 'Office installs this one. Windows ships a copy of its own, and excluding it here does not remove that one.', icon: 'i-align-16' },
+  { id: 'Lync', name: 'Skype for Business', note: 'Calls', icon: 'i-hyperlink-16' },
   { id: 'OutlookForWindows', name: 'new Outlook for Windows', note: 'Separate from Outlook', icon: 'i-mail' }
 ];
 

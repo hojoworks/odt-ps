@@ -74,3 +74,14 @@ You can look at any source sprite with:
 Apache OpenOffice and OpenOffice.org are trademarks of The Apache Software
 Foundation. This project is unofficial and not affiliated with them; the icons
 are used as artwork only, and no OpenOffice branding or name is replicated.
+
+Four more toolbar icons come from the same page, three of them from the same
+OO.org 1.1 column as the rest, and one from the 2.1 column because that is the
+hyperlink the page wanted:
+
+| Source | Small | Used for |
+| --- | --- | --- |
+| `paste_OOo1.png` | `#i-paste-16` | OneNote in the apps list |
+| `cellaligntop_OOo1.png` | `#i-align-16` | both OneDrive rows |
+| `text_OOo1.png` | `#i-text-16` | Microsoft Teams (also the 1.1 text icon) |
+| `hyperlink_OOo2.png` | `#i-hyperlink-16` | Skype for Business, the one 2.1 icon |
