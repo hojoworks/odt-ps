@@ -143,8 +143,8 @@ export async function run(ctx) {
     "})()");
   await client.send("Emulation.clearDeviceMetricsOverride");
   await wait(350);
-  check("a narrow window stacks to one column, with nothing sticking out sideways",
-    narrow.outside.length === 0 && narrow.railDisplay === "grid" && narrow.railColumns === true &&
+  check("a narrow window stacks to one column, drops the rail, and nothing sticks out sideways",
+    narrow.outside.length === 0 && narrow.railDisplay === "grid" && narrow.railDisplay === "none" &&
     narrow.titleHidden === true,
     JSON.stringify({ view: narrow.view, outside: narrow.outside, railDisplay: narrow.railDisplay,
       railColumns: narrow.railColumns, titleHidden: narrow.titleHidden }));

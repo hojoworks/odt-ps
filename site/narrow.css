@@ -5,27 +5,19 @@
 
 @media (max-width: 860px) {
   .screen { padding: 10px 8px 10px; }
-  /* One column: the rail becomes a nav strip and the whole body scrolls, so
-     the narrow layout keeps a single scrollbar. */
-  .setup-body {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    align-content: start;
-    overflow: auto;
-  }
-  .setup-rail {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: var(--gap);
-    overflow: visible;
-  }
-  .setup-content { overflow: visible; }
-  .rail-block,
-  .rail-block + .rail-block { margin: 0; padding: 0; border: 0; }
+
+  /* The rail goes entirely. At this width its steps would be a strip of links
+     sitting above the sections, which is a worse way to move through one column
+     than scrolling it, and the live settings it carries are repeated in full by
+     the summary in Install. Nothing else about the window changes, which is the
+     point: the frame stays put and the sections scroll inside it at every size,
+     so the only thing that snaps is the rail leaving. */
+  .setup-rail { display: none; }
+
+  .setup-body { grid-template-columns: minmax(0, 1fr); }
   .pick-columns { grid-template-columns: minmax(0, 1fr); }
+
   /* both selectors, because .screen-title.is-canvas would win otherwise */
   .screen-title,
   .screen-title.is-canvas { display: none; }
 }
-
-

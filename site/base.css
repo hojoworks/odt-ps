@@ -16,9 +16,10 @@
   --font: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Verdana, Geneva, sans-serif;
   --mono: "Fixedsys", "Lucida Console", Consolas, "Courier New", monospace;
   --header-height: 20px;
-  /* The rail down the left. Its width lives here because the grid column and
-     anything measured against the rail have to agree. */
-  --rail-width: 244px;
+  /* The rail down the left. It gives way as the window narrows rather than
+     holding its width and squeezing the sections, and in the one-column layout it
+     is gone altogether. */
+  --rail-width: clamp(200px, 21vw, 244px);
   /* The greeter bar along the bottom, the height of the caption above it. */
   --status-height: 20px;
   /* How far the content dissolves into the face at each end of the scroll area.
