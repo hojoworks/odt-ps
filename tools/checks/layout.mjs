@@ -164,6 +164,19 @@ export async function run(ctx) {
     railGaps.length === 2 && railGaps[0] >= 16 && railGaps[1] > railGaps[0] + 4,
     JSON.stringify(railGaps));
 
+  /* The labels in the settings well have to be told from their values at a
+     glance, so they are a colour of their own rather than another white. */
+  const well = await evaluate(client,
+    "(function () {" +
+    "  var dt = document.querySelector('.rail-settings dt');" +
+    "  var dd = document.querySelector('.rail-settings dd');" +
+    "  return { label: getComputedStyle(dt).color, value: getComputedStyle(dd).color," +
+    "           weight: getComputedStyle(dt).fontWeight };" +
+    "})()");
+  check("the settings well labels are a colour of their own, not another white",
+    well.label === "rgb(255, 255, 0)" && well.value === "rgb(255, 255, 255)" &&
+    well.weight === "700", JSON.stringify(well));
+
   /* One spacing idea: 12 px between sections, 8 px between the blocks inside
      one, and nothing carries a trailing margin. */
   const rhythm = await evaluate(client,

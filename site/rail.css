@@ -98,7 +98,9 @@
   background: var(--navy);
   border: 1px solid #ffffff;
 }
-.rail-settings dt { color: #c0c0c0; font-weight: 700; margin-top: 4px; }
+/* The labels take the yellow the rail already uses for the step you are on, so a
+   label and its value are never a shade apart: they are two colours. */
+.rail-settings dt { color: #ffff00; font-weight: 700; margin-top: 4px; }
 .rail-settings dd { margin: 0; color: #ffffff; word-break: break-word; }
 .rail-settings dt:first-child { margin-top: 0; }
 
