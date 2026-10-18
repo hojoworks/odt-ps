@@ -1,13 +1,12 @@
-/* Turn the Apache OpenOffice 1.1 document icons into the 16-colour pixel-art
- * <symbol>s the setup screen draws.
+/* Turn the Apache OpenOffice 1.1 icons and the hand-drawn marks into the
+ * 16-colour pixel-art sheet the setup screen draws: site/icons.png plus the
+ * positions in site/icons.css.
  *
  *   node tools/make-icons.mjs
  *
  * The .ico sources in icons/ooo11/ come from Apache OpenOffice (Apache License
  * 2.0) and keep their provenance in icons/ooo11/README.md and docs/credits.md.
- * This script only rewrites the region of site/index.html between the
- * "ooo11:start" and "ooo11:end" markers, so the rest of the icon set stays
- * hand-drawn.
+ * The page links the sheet and never carries a <symbol> of its own.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -63,8 +62,9 @@ const PALETTE = [
 const hexColour = (rgb) => "#" + rgb.map((v) => v.toString(16).padStart(2, "0")).join("");
 const SIZE = 16;
 
-/* Which OO11 icon becomes which symbol. `large` adds the 26px version where the
-   page uses it; anything not referenced in site/ is not generated at all. */
+/* Which OO11 icon becomes which place in the sheet. `large` adds the 26px
+   version where the page uses it; anything not referenced in site/ is not
+   generated at all. */
 const ICONS = [
   { file: "ooo11-writer-doc.ico", id: "i-doc", note: "text document" },
   { file: "ooo11-calc-doc.ico", id: "i-grid", note: "spreadsheet" },
@@ -341,19 +341,6 @@ function rectangles(grid, size) {
   return out;
 }
 
-function symbol(id, grid, label, size) {
-  const lines = [];
-  lines.push('  <symbol id="' + id + '" viewBox="0 0 ' + size + " " + size + '">');
-  lines.push("    <!-- " + label + ": OpenOffice.org 1.1 icon, see docs/credits.md -->");
-  rectangles(grid, size).forEach((rect) => {
-    lines.push('    <rect x="' + rect.x + '" y="' + rect.y + '" width="' + rect.width +
-      '" height="' + rect.height + '" fill="' + hexColour(PALETTE[rect.colour]) + '"/>');
-  });
-  lines.push("  </symbol>");
-  return lines.join("\n");
-}
-
-const generated = [];
 const report = [];
 const grids = {};
 
@@ -362,14 +349,12 @@ ICONS.forEach((icon) => {
   const decoded = readIco(join(root, "icons", "ooo11", icon.file));
   const grid = toPixelArt(decoded.image, SIZE);
   grids[icon.id] = { grid: grid, size: SIZE };
-  generated.push(symbol(icon.id, grid, icon.note, SIZE));
   report.push(icon.file + " -> " + icon.id + "  (" + decoded.count + " sizes, using " +
     decoded.entry.width + "x" + decoded.entry.height + " at " + decoded.entry.bpp + "bpp)  " +
     grid.filter((c) => c !== null).length + " solid pixels");
   if (icon.large) {
     const big = toPixelArt(decoded.image, LARGE);
     grids[icon.large] = { grid: big, size: LARGE };
-    generated.push(symbol(icon.large, big, icon.note, LARGE));
     report.push(icon.file + " -> " + icon.large + "  (same source at " + LARGE + "x" + LARGE + ")  " +
       big.filter((c) => c !== null).length + " solid pixels");
   }
@@ -391,21 +376,14 @@ TOOLBAR.forEach((icon) => {
     if (!pair[1]) { return; }
     const grid = toPixelArt(pair[0], pair[2]);
     grids[pair[1]] = { grid: grid, size: pair[2] };
-    generated.push(symbol(pair[1], grid, icon.note, pair[2]));
     report.push(icon.file + " -> " + pair[1] + "  (" + pair[0].box.width + "x" + pair[0].box.height +
       " at " + pair[0].box.left + "," + pair[0].box.top + " -> " + pair[2] + "x" + pair[2] + ")  " +
       grid.filter((c) => c !== null).length + " solid pixels");
   });
 });
 
-const page = readFileSync(join(root, "site", "index.html"), "utf8");
-const block = "<!-- ooo11:start -->\n" + generated.join("\n") + "\n  <!-- ooo11:end -->";
-const pattern = /<!-- ooo11:start -->[\s\S]*?<!-- ooo11:end -->/;
-if (!pattern.test(page)) { throw new Error("site/index.html has no ooo11:start marker"); }
-writeFileSync(join(root, "site", "index.html"), page.replace(pattern, block));
-
 /* The favicon is the same artwork as a standalone file, because a favicon
-   cannot point at an inline <symbol>. */
+   cannot crop a region out of the sheet. */
 const FAVICON = process.env.ODT_FAVICON || "i-save-16";
 const favicon = grids[FAVICON];
 if (!favicon) { throw new Error("favicon source " + FAVICON + " was not generated"); }
@@ -514,26 +492,164 @@ const DRAWN = [
   ] }
 ];
 
+/* The small marks the page itself needs: the checkbox tick and radio dot in
+   both their colours, the four arrows (scrollbar buttons, the language
+   drop-down and the disclosure markers), and the diamond that marks a rail
+   step. They are drawn the same way as the five above, at the size they are
+   used, so a tick is never a scaled-down 16px drawing. */
+const ORNAMENTS = [
+  { id: "i-tick", size: 11, rows: [
+    "...........",
+    "...........",
+    "........44.",
+    ".......444.",
+    "......444..",
+    ".44...444..",
+    ".444444....",
+    "..4444.....",
+    "...44......",
+    "...........",
+    "..........."
+  ] },
+  { id: "i-tick-white", size: 11, rows: [
+    "...........",
+    "...........",
+    "........ff.",
+    ".......fff.",
+    "......fff..",
+    ".ff...fff..",
+    ".ffffff....",
+    "..ffff.....",
+    "...ff......",
+    "...........",
+    "..........."
+  ] },
+  { id: "i-arrow-up", size: 12, rows: [
+    "............",
+    "............",
+    "............",
+    ".....00.....",
+    ".....00.....",
+    "....0000....",
+    "....0000....",
+    "...000000...",
+    "...000000...",
+    "............",
+    "............",
+    "............"
+  ] },
+  { id: "i-arrow-down", size: 12, rows: [
+    "............",
+    "............",
+    "............",
+    "...000000...",
+    "...000000...",
+    "....0000....",
+    "....0000....",
+    ".....00.....",
+    ".....00.....",
+    "............",
+    "............",
+    "............"
+  ] },
+  { id: "i-arrow-left", size: 12, rows: [
+    "............",
+    "............",
+    "............",
+    ".......00...",
+    ".....0000...",
+    "...000000...",
+    "...000000...",
+    ".....0000...",
+    ".......00...",
+    "............",
+    "............",
+    "............"
+  ] },
+  { id: "i-arrow-right", size: 12, rows: [
+    "............",
+    "............",
+    "............",
+    "...00.......",
+    "...0000.....",
+    "...000000...",
+    "...000000...",
+    "...0000.....",
+    "...00.......",
+    "............",
+    "............",
+    "............"
+  ] },
+  { id: "i-step", size: 10, rows: [
+    ".....0....",
+    "....000...",
+    "...00000..",
+    "..0000000.",
+    ".000000000",
+    ".000000000",
+    "..0000000.",
+    "...00000..",
+    "....000...",
+    ".........."
+  ] },
+  { id: "i-dot", size: 7, rows: [
+    "..444..",
+    ".44444.",
+    "4444444",
+    "4444444",
+    "4444444",
+    ".44444.",
+    "..444.."
+  ] },
+  { id: "i-dot-white", size: 7, rows: [
+    "..fff..",
+    ".fffff.",
+    "fffffff",
+    "fffffff",
+    "fffffff",
+    ".fffff.",
+    "..fff.."
+  ] }
+];
+
 /* ---------------------------------------------------------------------------
- * The same icons as one PNG, plus a rule per icon saying where it sits in it.
- * Two rows: the 16px icons along the top, the 26px ones under them, each at its
- * own size so nothing is ever scaled. Both files are committed and the page
- * links them, which is why this is a sheet rather than an .svg per icon: a page
- * opened straight off disk cannot resolve an external <use href="file.svg#id">,
- * and 29 separate requests is a worse trade than one image.
+ * The same icons as one PNG, plus a custom property per icon saying where it
+ * sits in it. Rows are ordered by size: the 16px icons along the top, the 26px
+ * ones under them, then the smaller marks, each at its own size so nothing is
+ * ever scaled. Both files are committed and the page links them, which is why
+ * this is a sheet rather than an .svg per icon: a page opened straight off disk
+ * cannot resolve an external <use href="file.svg#id">, and a separate request
+ * per icon is a worse trade than one image.
  * --------------------------------------------------------------------------- */
-/* The hand-drawn five join the sheet and nothing else: they are no longer emitted
-   as inline symbols, so every icon the page shows comes from one image. */
-DRAWN.forEach((icon) => {
-  grids[icon.id] = { grid: icon.rows.join("").split("").map((c) => (c === "." ? null : parseInt(c, 16))), size: SIZE };
+/* The hand-drawn icons and ornaments join the sheet and nothing else: every
+   icon the page shows comes from one image, placed by one set of positions. */
+DRAWN.concat(ORNAMENTS).forEach((icon) => {
+  const size = icon.size || SIZE;
+  if (icon.rows.length !== size || icon.rows.some((row) => row.length !== size)) {
+    throw new Error(icon.id + ": expected " + size + " rows of " + size + " pixels");
+  }
+  grids[icon.id] = {
+    grid: icon.rows.join("").split("").map((c) => (c === "." ? null : parseInt(c, 16))),
+    size: size
+  };
 });
 
-const smalls = Object.keys(grids).filter((id) => grids[id].size === SIZE);
-const larges = Object.keys(grids).filter((id) => grids[id].size !== SIZE);
-const sheetWidth = Math.max(smalls.length * SIZE, larges.length * LARGE);
-const sheetHeight = SIZE + LARGE;
+const rowSizes = [SIZE, LARGE].concat([...new Set(Object.values(grids).map((entry) => entry.size))]
+  .filter((size) => size !== SIZE && size !== LARGE)
+  .sort((a, b) => b - a));
+const rows = rowSizes.map((size) => ({
+  size: size,
+  ids: Object.keys(grids).filter((id) => grids[id].size === size)
+}));
+const sheetWidth = Math.max.apply(null, rows.map((row) => row.ids.length * row.size));
+let sheetHeight = 0;
+rows.forEach((row) => {
+  row.y = sheetHeight;
+  sheetHeight += row.size;
+});
 const indices = Buffer.alloc(sheetWidth * sheetHeight);
 const places = {};
+const variableOnly = new Set(ORNAMENTS.map((icon) => icon.id));
 function place(id, x0, y0) {
   const entry = grids[id];
   for (let y = 0; y < entry.size; y++) {
@@ -545,25 +661,34 @@ function place(id, x0, y0) {
   }
   places[id] = { x: x0, y: y0 };
 }
-smalls.forEach((id, i) => place(id, i * SIZE, 0));
-larges.forEach((id, i) => place(id, i * LARGE, SIZE));
+rows.forEach((row) => {
+  row.ids.forEach((id, index) => place(id, index * row.size, row.y));
+});
 
 writeFileSync(join(root, "site", "icons.png"), encodePalettePng({
   width: sheetWidth, height: sheetHeight, colours: PALETTE, indices: indices, transparent: true
 }));
 
+/* The sheet is placed by custom properties, so a widget that cannot carry a
+   class -- a checkbox, a scrollbar button, a generated step marker -- can use
+   the same position with `var(--i-name)` instead of a copy of the number. */
 const rules = ["/* Generated by tools/make-icons.mjs: where each icon sits in icons.png.",
-  "   Do not edit this file, run the tool. */", ""];
+  "   Do not edit this file, run the tool. */", "", ":root {"];
 Object.keys(places).forEach((id) => {
   const at = places[id];
-  rules.push("." + id + " { background-position: " + (-at.x) + "px " + (-at.y) + "px; }");
+  rules.push("  --" + id + ": " + (-at.x) + "px " + (-at.y) + "px;");
+});
+rules.push("}", "");
+Object.keys(places).forEach((id) => {
+  if (variableOnly.has(id)) { return; }
+  rules.push("." + id + " { background-position: var(--" + id + "); }");
 });
 writeFileSync(join(root, "site", "icons.css"), rules.join("\n") + "\n");
 
 console.log("wrote site/icons.png (" + sheetWidth + "x" + sheetHeight + ", " +
-  smalls.length + " at " + SIZE + "px and " + larges.length + " at " + LARGE + "px)");
+  rows.map((row) => row.ids.length + " at " + row.size + "px").join(", ") + ")");
 console.log("wrote site/icons.css with " + Object.keys(places).length + " places");
 
 console.log(report.join("\n"));
-console.log("wrote " + generated.length + " symbols into site/index.html");
+console.log("wrote " + Object.keys(places).length + " places, all from one sheet");
 console.log("wrote site/favicon.svg from " + FAVICON);

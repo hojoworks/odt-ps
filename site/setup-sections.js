@@ -18,10 +18,16 @@
   var ODT_EXE_PAGE = "https://www.microsoft.com/en-us/download/details.aspx?id=49117";
 
 
+  /* An icon is one element with two classes: the size (sm/md) and the place it
+     holds in the generated sheet. The page never carries a <symbol>. */
+  function iconTag(id, size) {
+    return '<span class="icon ' + (size || "sm") + " " + id + '" aria-hidden="true"></span>';
+  }
+
   function pickRow(options) {
     return '<label class="pick" data-note="' + escapeHtml(options.note || "") + '">' +
       '<input type="' + (options.type || "checkbox") + '" ' + options.data + '>' +
-      '<svg class="icon sm" aria-hidden="true"><use href="#' + options.icon + '"></use></svg>' +
+      iconTag(options.icon) +
       '<span class="pick-name">' + escapeHtml(options.name) + "</span>" +
       (options.size ? '<span class="pick-size">' + escapeHtml(options.size) + "</span>" : "") + "</label>";
   }
@@ -204,7 +210,7 @@
          story, and a sentence about each of 95 of them would be noise. */
       rows.push('<label class="pick">' +
         '<input type="checkbox" data-lang="' + item.id + '"' + (checked ? " checked" : "") + ">" +
-        '<svg class="icon sm" aria-hidden="true"><use href="#i-spellcheck-16"></use></svg>' +
+        iconTag("i-spellcheck-16") +
         '<span class="pick-name">' + escapeHtml(item.name) + "</span>" +
         '<span class="pick-size">' + escapeHtml(item.id) + "</span></label>");
     });
@@ -222,6 +228,7 @@
 
     html.push('<div class="pick-side">');
     html.push('<div class="pick-group">UI language</div>');
+    html.push('<div class="select-wrap">');
     html.push('<select id="ui-language" aria-label="UI language">');
     if (!picked.length) {
       /* nothing ticked at all, or only "same as Windows", which is not a UI
@@ -234,6 +241,7 @@
         escapeHtml(languageFor(id).name) + "</option>");
     });
     html.push("</select>");
+    html.push("</div>");
 
     html.push('<div class="pick-group">Additional languages</div>');
     html.push('<div class="pick-list extra-list' + (extra.length ? "" : " is-idle") +
@@ -327,7 +335,7 @@
       html.push('<div class="pick-list" role="group" aria-label="Apps">' +
         '<label class="pick" data-note="' + escapeHtml(primary.note) + '">' +
         '<input type="checkbox" checked disabled>' +
-        '<svg class="icon sm" aria-hidden="true"><use href="#' + icon + '"></use></svg>' +
+        iconTag(icon) +
         '<span class="pick-name">' + escapeHtml(primary.name) + "</span></label></div>");
       html.push("</div>");
       html.push('<div class="pick-side"><div class="pick-desc"><h4>Description</h4><p id="apps-desc">' +
@@ -419,36 +427,36 @@
     html.push('<div class="build-cards' + (ready ? "" : " is-idle") + '">');
 
     /* The express route: one line that does the lot. */
-    html.push('<article class="build-card"><h3><svg class="icon md" aria-hidden="true"><use href="#i-copy-26"></use></svg>Automatic Install</h3>' +
+    html.push('<article class="build-card"><h3><span class="icon md i-copy-26" aria-hidden="true"></span>Automatic Install</h3>' +
       '<p class="mini">Runs the installer with exactly these settings.</p>' +
       '<div class="cmd-box"><code id="install-oneliner">' +
       (ready ? escapeHtml(oneLiner) : "Pick a version and this line appears here.") + "</code></div>" +
       '<div class="btn-row"><button type="button" class="btn primary" data-copy="#install-oneliner"' +
-      (ready ? "" : " disabled") + '><svg class="icon sm" aria-hidden="true"><use href="#i-copy-16"></use></svg>Copy the line</button></div>' +
+      (ready ? "" : " disabled") + '><span class="icon sm i-copy-16" aria-hidden="true"></span>Copy the line</button></div>' +
       "</article>");
 
     /* Everything you would do by hand, folded away. */
     html.push('<details class="manual">');
     html.push("<summary>Manual Install</summary>");
 
-    html.push('<article class="build-card"><h3><svg class="icon md" aria-hidden="true"><use href="#i-save-26"></use></svg>configuration.xml</h3>' +
+    html.push('<article class="build-card"><h3><span class="icon md i-save-26" aria-hidden="true"></span>configuration.xml</h3>' +
       '<div class="cmd-box xml-box"><code id="install-xml">' + escapeHtml(xml) + "</code></div>" +
       '<div class="btn-row">' +
       '<button type="button" class="btn" data-action="save-xml"' + (ready ? "" : " disabled") +
-      '><svg class="icon sm" aria-hidden="true"><use href="#i-save-16"></use></svg>Save configuration.xml</button>' +
+      '><span class="icon sm i-save-16" aria-hidden="true"></span>Save configuration.xml</button>' +
       '<button type="button" class="btn" data-copy="#install-xml"' + (ready ? "" : " disabled") +
-      '><svg class="icon sm" aria-hidden="true"><use href="#i-copy-16"></use></svg>Copy XML</button>' +
+      '><span class="icon sm i-copy-16" aria-hidden="true"></span>Copy XML</button>' +
       "</div></article>");
 
-    html.push('<article class="build-card"><h3><svg class="icon md" aria-hidden="true"><use href="#i-open-26"></use></svg>Office Deployment Tool</h3>' +
+    html.push('<article class="build-card"><h3><span class="icon md i-open-26" aria-hidden="true"></span>Office Deployment Tool</h3>' +
       '<p class="mini">Microsoft\'s own setup.exe. Put <code>configuration.xml</code> beside it, then run:</p>' +
       '<div class="cmd-box"><code id="install-odt-commands">setup.exe /download configuration.xml' + "\n" +
       "setup.exe /configure configuration.xml</code></div>" +
       '<div class="btn-row">' +
       '<a class="btn" href="' + ODT_EXE_PAGE + '" target="_blank" rel="noopener">' +
-      '<svg class="icon sm" aria-hidden="true"><use href="#i-open-16"></use></svg>Download the ODT from Microsoft</a>' +
+      '<span class="icon sm i-open-16" aria-hidden="true"></span>Download the ODT from Microsoft</a>' +
       '<button type="button" class="btn" data-copy="#install-odt-commands"' + (ready ? "" : " disabled") +
-      '><svg class="icon sm" aria-hidden="true"><use href="#i-copy-16"></use></svg>Copy the two commands</button>' +
+      '><span class="icon sm i-copy-16" aria-hidden="true"></span>Copy the two commands</button>' +
       "</div></article>");
 
     html.push("</details>");

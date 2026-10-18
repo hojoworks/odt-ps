@@ -27,7 +27,7 @@
          it, so there is no hash to leave behind in the address bar. */
       return '<li class="' + (section.id === view.activeSection ? "current" : "") + '">' +
         '<button type="button" class="step" data-section="' + section.id + '">' +
-        '<span class="step-marker" aria-hidden="true">&#10070;</span>' +
+        '<span class="step-marker" aria-hidden="true"></span>' +
         '<span class="step-name">' + escapeHtml(section.label) + "</span></button></li>";
     }).join("");
     if (steps !== lastSteps) {

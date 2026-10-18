@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import vm from "node:vm";
+import { decodePng } from "./png.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Mirror a browser: `window` is the global object, so `window.ODT = ...`
@@ -343,42 +344,63 @@ verify("presets: the other three leave out the business apps and nothing else",
     businessApps.every((id) => preset.state.excludeApps.includes(id))),
   presets.slice(1).map((preset) => preset.id + ": " + preset.state.excludeApps.join(",")).join(" | "));
 
-/* 14. Icons. Every symbol the page points at has to exist, and every symbol has
-   to stay inside the 16-colour palette the screen is drawn from. */
+/* 14. Icons. The page draws from one generated sheet: every icon name it
+   reaches for has to have a place in icons.css, every place has to be used,
+   and the sheet itself has to stay inside the 16-colour palette. */
 const page = readFileSync(join(root, "site", "index.html"), "utf8");
 const siteFiles = ["site/ui.js", "site/setup-core.js", "site/setup-sections.js", "site/setup-rail.js",
   "site/wizard.js", "site/odt-data.js"];
-const sources = [page].concat(siteFiles.map((file) => readFileSync(join(root, file), "utf8"))).join("\n");
-const definedIcons = new Set([...page.matchAll(/<symbol id="([^"]+)"/g)].map((m) => m[1]));
-/* Strip the definitions before looking for uses: otherwise every symbol would
-   count as a reference to itself, which would make the checks meaningless. */
-const usesOnly = sources
-  .replace(/<symbol[\s\S]*?<\/symbol>/g, "")
-  .replace(/<!-- ooo11:start -->[\s\S]*?<!-- ooo11:end -->/g, "");
-const referencedIcons = [...new Set([
-  ...[...usesOnly.matchAll(/href="#(i-[a-z0-9-]+)"/g)].map((m) => m[1]),
-  ...[...usesOnly.matchAll(/["'](i-[a-z0-9-]+)["']/g)].map((m) => m[1])
-])].sort();
+/* The stylesheets count too: the tick, the scrollbar arrows and the rail marker
+   have no class of their own, so they reach for `var(--i-name)` instead. */
+const styleFiles = ["site/base.css", "site/rail.css", "site/content.css", "site/pick.css",
+  "site/scrollbars.css", "site/controls.css", "site/narrow.css"];
+const markupSources = [page].concat(siteFiles.map((file) => readFileSync(join(root, file), "utf8"))).join("\n");
+const styleSources = styleFiles.map((file) => readFileSync(join(root, file), "utf8")).join("\n");
+const sources = markupSources + "\n" + styleSources;
+const iconCss = readFileSync(join(root, "site", "icons.css"), "utf8");
+const definedIcons = new Set([...iconCss.matchAll(/^\s+--(i-[a-z0-9-]+): -?\d+px -?\d+px;$/gm)]
+  .map((match) => match[1]));
+const classIcons = new Set([...iconCss.matchAll(/^\.(i-[a-z0-9-]+) \{ background-position: var\(--/gm)]
+  .map((match) => match[1]));
+const referencedInMarkup = [...new Set([...markupSources.matchAll(/\b(i-[a-z0-9-]+)\b/g)]
+  .map((match) => match[1]))].sort();
+const missingClasses = referencedInMarkup.filter((id) => !classIcons.has(id));
+verify("icons: every icon the markup names has a class rule (" + referencedInMarkup.length + " named, " +
+  classIcons.size + " classes)", missingClasses.length === 0, missingClasses.join(", "));
+const referencedIcons = [...new Set([...sources.matchAll(/\b(i-[a-z0-9-]+)\b/g)].map((match) => match[1]))].sort();
 const missingIcons = referencedIcons.filter((id) => !definedIcons.has(id));
-verify("icons: every referenced symbol is defined (" + referencedIcons.length + " used, " +
-  definedIcons.size + " defined)", missingIcons.length === 0, missingIcons.join(", "));
+verify("icons: every icon the page names has a place in the sheet (" + referencedIcons.length + " used, " +
+  definedIcons.size + " placed)", missingIcons.length === 0, missingIcons.join(", "));
 
-/* and the other way round: a symbol nothing points at is dead weight */
+/* and the other way round: a place nothing points at is dead weight */
 const unusedIcons = [...definedIcons].filter((id) => !referencedIcons.includes(id));
-verify("icons: no unreferenced symbols (" + definedIcons.size + " defined, " +
+verify("icons: no unused places in the sheet (" + definedIcons.size + " placed, " +
   referencedIcons.length + " used)", unusedIcons.length === 0, unusedIcons.join(", "));
+
+verify("icons: the page links the generated sheet, and carries no inline symbol",
+  page.includes('<link rel="stylesheet" href="icons.css">') && !page.includes("<symbol") &&
+  !page.includes("ooo11:start"),
+  page.includes("icons.css") ? "sheet linked" : "icons.css is not linked");
 
 const PALETTE16 = new Set(["#000000", "#800000", "#008000", "#808000", "#000080", "#800080", "#008080",
   "#c0c0c0", "#808080", "#ff0000", "#00ff00", "#ffff00", "#0000ff", "#ff00ff", "#00ffff", "#ffffff"]);
-const symbolColours = new Set([...page.matchAll(/<symbol[\s\S]*?<\/symbol>/g)]
-  .flatMap((block) => [...block[0].matchAll(/fill="(#[0-9a-fA-F]{6})"/g)].map((m) => m[1].toLowerCase())));
-const offPalette = [...symbolColours].filter((colour) => !PALETTE16.has(colour));
-verify("icons: every symbol uses only the 16-colour palette (" + symbolColours.size + " colours)",
-  offPalette.length === 0, offPalette.join(", "));
+const sheet = decodePng(readFileSync(join(root, "site", "icons.png")));
+const sheetColours = new Set();
+let sheetTransparent = false;
+for (let i = 0; i < sheet.width * sheet.height; i++) {
+  if (sheet.pixels[i * 4 + 3] === 0) { sheetTransparent = true; continue; }
+  sheetColours.add("#" + [0, 1, 2].map((channel) =>
+    sheet.pixels[i * 4 + channel].toString(16).padStart(2, "0")).join(""));
+}
+const offPalette = [...sheetColours].filter((colour) => !PALETTE16.has(colour));
+verify("icons: the sheet is 416x82, transparent behind the drawings, and palette-only",
+  sheet.width === 416 && sheet.height === 82 && sheetTransparent && offPalette.length === 0,
+  sheet.width + "x" + sheet.height + ", " + sheetColours.size + " colours" +
+  (sheetTransparent ? "" : ", no transparency") + (offPalette.length ? ", off palette: " + offPalette.join(", ") : ""));
 
 /* the six document pictograms come from Apache OpenOffice (see icons/ooo11) */
 const ooo11 = ["i-doc", "i-grid", "i-slide", "i-db", "i-shapes", "i-chart"];
-verify("icons: the six OO11 document pictograms are present",
+verify("icons: the six OO11 document pictograms have a place in the sheet",
   ooo11.every((id) => definedIcons.has(id)), ooo11.filter((id) => !definedIcons.has(id)).join(", "));
 
 /* 14. Nothing is chosen until a version is picked. */

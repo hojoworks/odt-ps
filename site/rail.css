@@ -85,8 +85,20 @@
 
 .rail-steps li.current .step { background: var(--navy); color: #ffff00; }
 
-/* an inline jump inside a paragraph reads as a link, but is a button */
-.step-marker { flex: none; width: 10px; color: inherit; }
+/* The step marker is the sheet's diamond, masked so it takes the step's colour
+   with its label: grey at rest, white on hover, yellow for the current step. */
+.step-marker {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  background-color: currentColor;
+  -webkit-mask-image: url("icons.png");
+  mask-image: url("icons.png");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: var(--i-step);
+  mask-position: var(--i-step);
+}
 .step-name { min-width: 0; font-weight: 700; }
 
 /* the live settings, in a boxed well with a white frame like the reference */

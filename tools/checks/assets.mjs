@@ -1,8 +1,48 @@
-/* The generated backdrop, the pixel title, and the scrollbars they are drawn
-   with. */
+/* The generated backdrop, the pixel title, the icon sheet and the scrollbars
+   they are drawn with. */
 
 export async function run(ctx) {
   const { client, check, evaluate, wait, waitFor, pickVersion, XML_IS_CONSISTENT } = ctx;
+  /* ---- the icon sheet ---- */
+  const sprite = await evaluate(client,
+    "(function () {" +
+    "  var small = document.querySelector('.icon.i-save-16');" +
+    "  var large = document.querySelector('.icon.i-save-26');" +
+    "  var a = getComputedStyle(small), b = getComputedStyle(large);" +
+    "  return { image: a.backgroundImage.indexOf('icons.png') !== -1," +
+    "           repeat: a.backgroundRepeat, small: a.backgroundPosition, large: b.backgroundPosition," +
+    "           smallSize: small.getBoundingClientRect().width, largeSize: large.getBoundingClientRect().width," +
+    "           rendering: a.imageRendering, symbols: document.querySelectorAll('symbol').length };" +
+    "})()");
+  check("icons paint from one sheet, 16 and 26 px at their own size, no inline symbols",
+    sprite.image && sprite.repeat === "no-repeat" && sprite.small === "-96px 0px" &&
+    sprite.large === "0px -16px" && sprite.smallSize === 16 && sprite.largeSize === 26 &&
+    sprite.rendering === "pixelated" && sprite.symbols === 0, JSON.stringify(sprite));
+
+  /* The marks with no class of their own reach for the same positions as a
+     custom property, so a checked box and a rail step are drawn from the sheet
+     rather than a second copy of the artwork. */
+  const marks = await evaluate(client,
+    "(function () {" +
+    "  var tick = document.querySelector('#apps-body input[type=checkbox]:checked');" +
+    "  var dot = document.querySelector('#edition-body input[type=radio]:checked');" +
+    "  var step = document.querySelector('.step-marker');" +
+    "  var t = getComputedStyle(tick), s = getComputedStyle(step);" +
+    "  var d = getComputedStyle(dot, '::after');" +
+    "  var root = getComputedStyle(document.documentElement);" +
+    "  var mask = s.maskImage || s.webkitMaskImage || '';" +
+    "  return { tickImage: t.backgroundImage.indexOf('icons.png') !== -1," +
+    "           tick: t.backgroundPosition, tickVar: root.getPropertyValue('--i-tick').trim()," +
+    "           dotImage: d.backgroundImage.indexOf('icons.png') !== -1," +
+    "           dot: d.backgroundPosition, dotVar: root.getPropertyValue('--i-dot').trim()," +
+    "           stepMask: mask.indexOf('icons.png') !== -1," +
+    "           step: (s.maskPosition || s.webkitMaskPosition), stepVar: root.getPropertyValue('--i-step').trim() };" +
+    "})()");
+  check("the sheet also draws the checkbox tick, the radio dot and the rail marker",
+    marks.tickImage && marks.tick === marks.tickVar &&
+    marks.dotImage && marks.dot === marks.dotVar &&
+    marks.stepMask && marks.step === marks.stepVar, JSON.stringify(marks));
+
   /* ---- dithered backdrop ---- */
   const backdrop = await evaluate(client,
     "(function () {" +

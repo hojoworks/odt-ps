@@ -4,25 +4,32 @@
 
 Two sets, deliberately kept apart:
 
-**Drawn for this project (Apache 2.0, like the rest of the repository).** Five symbols: the three system buttons on the caption, and the two fallback shapes the row renderers keep for an
-unknown id, a box and an envelope. The floppy is not drawn: it comes from the OpenOffice.org artwork above. They are
-drawn on a 16×16 grid following Windows 9x conventions:
+**Drawn for this project (Apache 2.0, like the rest of the repository).** Fourteen cells in the sheet: the three
+system buttons on the caption; the two fallback shapes the row renderers keep for an unknown id, a box and an
+envelope; the checkbox tick and the radio dot, each in its normal and inverted colours; the four arrows (the
+scrollbar buttons and the language drop-down); and the diamond that marks a step in the rail. The floppy is not
+drawn: it comes from the OpenOffice.org artwork below. The larger shapes are drawn on the 16×16 grid following
+Windows 9x conventions:
 
 * one-pixel black outline around every shape
 * white highlight on the top/left edge, `#808080` shadow on the bottom/right edge
 * **only the 16-colour Windows 9x palette**:
   `#000000 #800000 #008000 #808000 #000080 #800080 #008080 #c0c0c0 #808080 #ff0000 #00ff00 #ffff00 #0000ff #ff00ff #00ffff #ffffff`
 
-**Apache OpenOffice / OpenOffice.org 1.1 icons (Apache License 2.0).** Eighteen pictograms: six document types
-(text, spreadsheet, presentation, database, drawing, chart) and thirteen toolbar icons (save, copy, open, help,
-hyperlink, text, search, spellcheck, navigator, plugin, ok, insert column, stylist), with the 26×26 version
-included where a card heading uses one. Sources:
+The tick, the dot, the arrows and the rail diamond are solid marks from the same palette, drawn at the 7-12px size
+they are used, so none of them is a scaled-down copy.
+
+**Apache OpenOffice / OpenOffice.org 1.1 icons (Apache License 2.0).** Twenty-one pictograms: six document types
+(text, spreadsheet, presentation, database, drawing, chart) and fifteen toolbar icons (save, copy, open, help,
+hyperlink in both its 1.1 and 2.1 forms, paste, cell-align top, text, spellcheck, navigator, plugin, ok, insert
+column, stylist), with the 26×26 version of save, copy and open included where a card heading uses one. Sources:
 
     https://svn.apache.org/repos/asf/openoffice/trunk/main/sysui/desktop/icons/     (trunk revision 1939163)
     https://www.openoffice.org/ui/VisualDesign/OOo_icon_evolution.html
 
-They are scaled, hard-edged and quantised into the same 16-colour palette by `tools/make-icons.mjs`, and the result
-is written into the `ooo11:start` … `ooo11:end` region of `site/index.html`. The originals, the mapping and the list
+They are scaled, hard-edged and quantised into the same 16-colour palette by `tools/make-icons.mjs`, which paints
+them into the one sheet the page draws from: `site/icons.png`, with a custom property per icon in `site/icons.css`
+used as either a background position or a mask position. The originals, the mapping and the list
 of changes are in [icons/ooo11/README.md](../icons/ooo11/README.md), and the licence text in
 [LICENSE](../LICENSE). Apache OpenOffice and OpenOffice.org are trademarks of The
 Apache Software Foundation; this project is unofficial, uses the artwork only, and replicates none of their
@@ -42,8 +49,8 @@ We went looking, and this is worth documenting because it is the obvious questio
 | `tossnet/Blazor-WinOld` (MIT) | Mostly Windows 7 artwork plus a few 16×16 toolbar bitmaps, and not a Win3.1 icon set. |
 | Apache OpenOffice **Galaxy / Crystal / Tango** themes | Modern 2005-era colour artwork, and the Crystal theme is LGPL. The **OO11** document icons from the same repository were adopted instead: Apache-2.0, and after conversion they sit inside the 16-colour palette. |
 
-If someone publishes a wider Win3.1-styled set under MIT or CC0, swapping it in means replacing the `<symbol>`
-blocks in `site/index.html`; nothing else depends on the artwork.
+If someone publishes a wider Win3.1-styled set under MIT or CC0, swapping it in means changing the source list in
+`tools/make-icons.mjs` and running it again; nothing else depends on the artwork.
 
 ## The backdrop
 

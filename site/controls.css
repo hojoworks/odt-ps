@@ -2,13 +2,17 @@
 
 /* ---------------------------------------------------------------- widgets */
 
-.icon-defs { position: absolute; }
-
+/* An icon is a window onto the generated sheet: the size says how much of it
+   to show, the `.i-*` rule in icons.css says where. Both are set from a
+   class, so the page carries no SVG symbol definitions at all. */
 .icon {
-  width: 32px;
-  height: 32px;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
   flex: none;
-  shape-rendering: crispEdges;
+  background-image: url("icons.png");
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
 
 .icon.sm { width: 16px; height: 16px; }
@@ -104,14 +108,13 @@ input[type="radio"] {
 
 input[type="radio"] { border-radius: 50%; }
 
-/* The tick is a pixel-art background so it is centred exactly: a rotated border
-   shape never lines up in a 13px box. 11x11 is the padding box, so it draws 1:1,
-   and the tick's own box is 9x7 with an even margin on every side. */
+/* The tick is a cell in the icon sheet: 11x11 is the padding box, so it draws
+   1:1 rather than being scaled, and the tick's own box is 9x7 with an even
+   margin on every side. */
 input[type="checkbox"]:checked {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' shape-rendering='crispEdges'%3E%3Crect x='1' y='5' width='2' height='2' fill='%23000080'/%3E%3Crect x='2' y='6' width='2' height='2' fill='%23000080'/%3E%3Crect x='3' y='7' width='2' height='2' fill='%23000080'/%3E%3Crect x='4' y='6' width='2' height='2' fill='%23000080'/%3E%3Crect x='5' y='5' width='2' height='2' fill='%23000080'/%3E%3Crect x='6' y='4' width='2' height='2' fill='%23000080'/%3E%3Crect x='7' y='3' width='2' height='2' fill='%23000080'/%3E%3Crect x='8' y='2' width='2' height='2' fill='%23000080'/%3E%3C/svg%3E");
+  background-image: url("icons.png");
   background-repeat: no-repeat;
-  background-position: center;
-  background-size: 11px 11px;
+  background-position: var(--i-tick);
 }
 
 input[type="radio"]:checked::after {
@@ -121,11 +124,13 @@ input[type="radio"]:checked::after {
   top: 2px;
   width: 7px;
   height: 7px;
-  border-radius: 50%;
-  background: var(--navy);
+  background-image: url("icons.png");
+  background-repeat: no-repeat;
+  background-position: var(--i-dot);
 }
 
-input:focus-visible { outline: 1px dotted #000; outline-offset: 1px; }
+input:focus-visible,
+select:focus-visible { outline: 1px dotted #000; outline-offset: 1px; }
 
 select,
 input[type="text"] {
@@ -136,6 +141,14 @@ input[type="text"] {
   font-size: 12px;
   border: 1px solid;
   border-color: var(--dark) var(--light) var(--light) var(--dark);
+}
+
+/* The language drop-down draws its arrow from the icon sheet (see .select-wrap
+   in pick.css), so the native one is switched off and its room reserved. */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 20px;
 }
 
 .check-list { margin: 0; padding: 0; list-style: none; }
@@ -208,10 +221,28 @@ input[type="text"] {
 #s-notes summary { cursor: pointer; font-weight: 700; list-style: none; }
 .advanced > summary::-webkit-details-marker,
 .manual > summary::-webkit-details-marker { display: none; }
+
+/* The open/closed triangle is the sheet's right arrow, turned by CSS, and the
+   mask means it takes the summary's colour with the label: black at rest, white
+   on hover, no second copy of the drawing. */
 .advanced > summary::before,
-.manual > summary::before { content: "\25B8  "; }
+.manual > summary::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+  vertical-align: -2px;
+  background-color: currentColor;
+  -webkit-mask-image: url("icons.png");
+  mask-image: url("icons.png");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: var(--i-arrow-right);
+  mask-position: var(--i-arrow-right);
+}
 .advanced[open] > summary::before,
-.manual[open] > summary::before { content: "\25BE  "; }
+.manual[open] > summary::before { transform: rotate(90deg); }
 
 .advanced > summary,
 .manual > summary {

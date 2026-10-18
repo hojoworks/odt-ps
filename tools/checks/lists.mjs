@@ -20,7 +20,7 @@ export async function run(ctx) {
     "             white: cs.backgroundColor === 'rgb(255, 255, 255)' && cs.borderTopWidth !== '0px'," +
     "             scrolls: list.scrollHeight > list.clientHeight + 1," +
     "             rowHeight: first.getBoundingClientRect().height," +
-    "             icon: first.querySelector('svg').getBoundingClientRect().width," +
+    "             icon: first.querySelector('.icon').getBoundingClientRect().width," +
     "             size: (first.querySelector('.pick-size') || {}).textContent || ''," +
     "             tally: (document.querySelector(sel + ' .pick-tally') || {}).textContent || ''" +
     "           };" +
@@ -214,7 +214,8 @@ export async function run(ctx) {
       matchOnly: matchOnly }));
 
   /* Controls: every side of a check box has to be visible on white (the bottom
-     and right used to be white on white), and the radio dot has to be round. */
+     and right used to be white on white), and the radio dot has to be the
+     sheet's 7x7 cell rather than a soft CSS circle. */
   const controls = await evaluate(client,
     "(function () {" +
     "  var box = document.querySelector('#apps-body input[type=checkbox]');" +
@@ -223,13 +224,17 @@ export async function run(ctx) {
     "  var sides = [cs.borderTopColor, cs.borderRightColor, cs.borderBottomColor, cs.borderLeftColor];" +
     "  var visible = sides.filter(function (c) { return c === 'rgb(0, 0, 0)' || c === 'rgb(128, 128, 128)'; }).length;" +
     "  var dot = getComputedStyle(radio, '::after');" +
+    "  var root = getComputedStyle(document.documentElement);" +
     "  var thumb = getComputedStyle(document.querySelector('.setup-content'), '::-webkit-scrollbar-thumb');" +
     "  return { sides: sides.join(' | '), visible: visible," +
-    "           dotRadius: dot.borderTopLeftRadius," +
+    "           dotImage: dot.backgroundImage.indexOf('icons.png') !== -1," +
+    "           dotSize: dot.width + ' by ' + dot.height, dot: dot.backgroundPosition," +
+    "           dotVar: root.getPropertyValue('--i-dot').trim()," +
     "           thumbImage: thumb.backgroundImage.indexOf('linear-gradient') !== -1 };" +
     "})()");
-  check("check boxes show an edge on all four sides, radio dots are round, scrollbar thumbs chiselled",
-    controls.visible === 4 && controls.dotRadius === "50%" && controls.thumbImage === true,
+  check("check boxes show an edge on all four sides, radio dots come from the sheet, scrollbar thumbs chiselled",
+    controls.visible === 4 && controls.dotImage && controls.dotSize === "7px by 7px" &&
+    controls.dot === controls.dotVar && controls.thumbImage === true,
     JSON.stringify(controls));
 
   /* The Apps section is always there, and it always shows a list: a version
@@ -327,7 +332,9 @@ export async function run(ctx) {
     "  var visible = bottom - top >= 4 && right - left >= 4;" +
     "  return { x: Math.round((left + right) / 2), y: Math.round((top + bottom) / 2)," +
     "           visible: visible, ticked: row.querySelector('input').checked," +
-    "           restingTick: getComputedStyle(row.querySelector('input')).backgroundImage };" +
+    "           restingTick: getComputedStyle(row.querySelector('input')).backgroundPosition," +
+    "           restingImage: getComputedStyle(row.querySelector('input')).backgroundImage," +
+    "           restingVar: getComputedStyle(document.documentElement).getPropertyValue('--i-tick').trim() };" +
     "})()");
   const hover = { on: false };
   for (let attempt = 0; attempt < 3 && hover.on !== true; attempt++) {
@@ -343,17 +350,23 @@ export async function run(ctx) {
       "  return { on: row.matches(':hover'), rowBg: getComputedStyle(row).backgroundColor," +
       "           boxBg: getComputedStyle(input).backgroundColor," +
       "           boxBorder: getComputedStyle(input).borderTopColor," +
-      "           tick: getComputedStyle(input).backgroundImage };" +
+      "           tick: getComputedStyle(input).backgroundPosition," +
+      "           tickImage: getComputedStyle(input).backgroundImage," +
+      "           whiteVar: getComputedStyle(document.documentElement).getPropertyValue('--i-tick-white').trim() };" +
       "})()"));
   }
-  /* The tick is a background image, so it has to be the white one while the row
-     is navy -- and it must still be there at all, which a `background` shorthand
-     on the hover rule would quietly wipe out. */
+  /* The tick is a cell in the icon sheet: the resting row draws the navy cell,
+     the navy row draws the white one from the same sheet -- and the image has to
+     stay there at all, which a `background` shorthand on the hover rule would
+     quietly wipe out. */
   check("a hovered row inverts its checkbox so the tick stays visible",
     hoverPoint.visible === true && hoverPoint.ticked === true && hover.on === true &&
-    /fill=.(?:%23|#)000080/i.test(hoverPoint.restingTick) &&
+    hoverPoint.restingImage.indexOf("icons.png") !== -1 &&
+    hoverPoint.restingTick === hoverPoint.restingVar &&
     hover.rowBg === "rgb(0, 0, 128)" && hover.boxBg === "rgb(0, 0, 128)" &&
-    hover.boxBorder === "rgb(255, 255, 255)" && /fill=.(?:%23|#)ffffff/i.test(hover.tick),
+    hover.boxBorder === "rgb(255, 255, 255)" &&
+    hover.tickImage.indexOf("icons.png") !== -1 && hover.tick === hover.whiteVar &&
+    hover.tick !== hoverPoint.restingTick,
     JSON.stringify({ point: hoverPoint, hover: hover }));
 
   /* Park the pointer away from the window again, so later checks see resting
