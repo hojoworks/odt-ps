@@ -443,38 +443,10 @@ const DRAWN = [
   ] }
 ];
 
-/* The small marks the page itself needs: the checkbox tick and radio dot in
-   both their colours, and the four arrows (scrollbar buttons, the language
-   drop-down and the disclosure markers). They are drawn the same way as the
-   five above, at the size they are used, so a tick is never a scaled-down 16px
-   drawing. */
+/* The small mark the page still needs from the sheet: the four arrows, used by
+   the scrollbar buttons, the language drop-down and the disclosure markers. The
+   check and the radio dot are left to the browser and need no drawing. */
 const ORNAMENTS = [
-  { id: "i-tick", size: 11, rows: [
-    "...........",
-    "...........",
-    "........44.",
-    ".......444.",
-    "......444..",
-    ".44...444..",
-    ".444444....",
-    "..4444.....",
-    "...44......",
-    "...........",
-    "..........."
-  ] },
-  { id: "i-tick-white", size: 11, rows: [
-    "...........",
-    "...........",
-    "........ff.",
-    ".......fff.",
-    "......fff..",
-    ".ff...fff..",
-    ".ffffff....",
-    "..ffff.....",
-    "...ff......",
-    "...........",
-    "..........."
-  ] },
   { id: "i-arrow-up", size: 12, rows: [
     "............",
     "............",
@@ -530,24 +502,6 @@ const ORNAMENTS = [
     "............",
     "............",
     "............"
-  ] },
-  { id: "i-dot", size: 7, rows: [
-    "..444..",
-    ".44444.",
-    "4444444",
-    "4444444",
-    "4444444",
-    ".44444.",
-    "..444.."
-  ] },
-  { id: "i-dot-white", size: 7, rows: [
-    "..fff..",
-    ".fffff.",
-    "fffffff",
-    "fffffff",
-    "fffffff",
-    ".fffff.",
-    "..fff.."
   ] }
 ];
 

@@ -80,28 +80,8 @@
 .pick:hover .pick-size,
 .pick:focus-within .pick-size { color: #c0c0c0; }
 
-/* On navy, dark-on-white controls vanish, so the box inverts: a white outline
-   with a white tick (or dot) inside, the way Windows' own lists drew it.
-   `background-color`, never the shorthand: the tick is a background image and
-   the shorthand would wipe it out, leaving an empty box on the highlighted row. */
-.pick:hover input[type="checkbox"]:not(:disabled),
-.pick:focus-within input[type="checkbox"]:not(:disabled),
-.pick:hover input[type="radio"]:not(:disabled),
-.pick:focus-within input[type="radio"]:not(:disabled) {
-  background-color: var(--navy);
-  border-color: #ffffff;
-}
-
-/* The tick is the same 11x11 cell as the rest of the sheet, in its inverted
-   colour: only the position changes, so the sheet stays the single drawing. */
-.pick:hover input[type="checkbox"]:checked,
-.pick:focus-within input[type="checkbox"]:checked {
-  background-position: var(--i-tick-white);
-}
-
-.pick:hover input[type="radio"]:checked::after,
-.pick:focus-within input[type="radio"]:checked::after { background-position: var(--i-dot-white); }
-
+/* The native box paints its own white field and navy accent on the navy row, so
+   nothing has to be inverted for the highlight. */
 .pick:hover input:focus-visible,
 .pick:focus-within input:focus-visible { outline-color: #ffffff; }
 

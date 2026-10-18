@@ -67,10 +67,10 @@ fail if any place in the sheet is left unreferenced. A toolbar source the page
 does not use is not vendored, the same as the document set.
 
 The sheet is a palette PNG, so the drawings cost a couple of kilobytes rather
-than a block of markup. It also carries the page's own marks — the checkbox
-tick and radio dot, and the four arrows (scrollbar buttons, the language
-drop-down and the disclosure markers) — painted from pixel grids in the same
-tool; see [docs/credits.md](../../docs/credits.md).
+than a block of markup. It also carries the page's own marks — the four arrows
+(scrollbar buttons, the language drop-down and the disclosure markers) — painted
+from pixel grids in the same tool; the checkbox tick and radio dot are left to
+the browser and need no drawing. See [docs/credits.md](../../docs/credits.md).
 
 The OOo 1.1 toolbar icons already use palette-adjacent colours (olive, black,
 white and two greys), so the conversion is faithful rather than approximate.

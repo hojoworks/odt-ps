@@ -349,8 +349,8 @@ verify("presets: the other three leave out the business apps and nothing else",
    and the sheet itself has to stay inside the 16-colour palette. */
 const siteFiles = ["site/ui.js", "site/setup-core.js", "site/setup-sections.js", "site/setup-rail.js",
   "site/wizard.js", "site/odt-data.js"];
-/* The stylesheets count too: the tick, the dot and the arrows have no class of
-   their own, so they reach for `var(--i-name)` instead. */
+/* The stylesheets count too: the four arrows have no class of their own, so
+   they reach for `var(--i-name)` instead. */
 const styleFiles = ["site/base.css", "site/rail.css", "site/content.css", "site/pick.css",
   "site/scrollbars.css", "site/controls.css", "site/narrow.css"];
 const markupSources = [markup].concat(siteFiles.map((file) => readFileSync(join(root, file), "utf8"))).join("\n");
@@ -393,8 +393,8 @@ for (let i = 0; i < sheet.width * sheet.height; i++) {
     sheet.pixels[i * 4 + channel].toString(16).padStart(2, "0")).join(""));
 }
 const offPalette = [...sheetColours].filter((colour) => !PALETTE16.has(colour));
-verify("icons: the sheet is 416x72, transparent behind the drawings, and palette-only",
-  sheet.width === 416 && sheet.height === 72 && sheetTransparent && offPalette.length === 0,
+verify("icons: the sheet is 416x54, transparent behind the drawings, and palette-only",
+  sheet.width === 416 && sheet.height === 54 && sheetTransparent && offPalette.length === 0,
   sheet.width + "x" + sheet.height + ", " + sheetColours.size + " colours" +
   (sheetTransparent ? "" : ", no transparency") + (offPalette.length ? ", off palette: " + offPalette.join(", ") : ""));
 

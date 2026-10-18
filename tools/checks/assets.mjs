@@ -22,27 +22,21 @@ export async function run(ctx) {
     sprite.large === "-26px -16px" && sprite.smallSize === "16px" && sprite.largeSize === "26px" &&
     sprite.rendering === "pixelated" && sprite.symbols === 0, JSON.stringify(sprite));
 
-  /* The marks with no class of their own reach for the same positions as a
-     custom property, so a checked box and a radio dot are drawn from the sheet
-     rather than a second copy of the artwork. */
-  const marks = await evaluate(client,
+  /* The check and the dot are the browser's own, tinted with the page accent,
+     so they need no sheet cell and stay sharp at any display scale. */
+  const controls = await evaluate(client,
     "(function () {" +
     "  var tick = document.querySelector('#apps-body input[type=checkbox]:checked');" +
     "  var dot = document.querySelector('#edition-body input[type=radio]:checked');" +
-    "  var t = getComputedStyle(tick);" +
-    "  var d = getComputedStyle(dot, '::after');" +
-    "  var root = getComputedStyle(document.documentElement);" +
-    "  return { tickImage: t.backgroundImage.indexOf('icons.png') !== -1," +
-    "           tickHard: t.imageRendering," +
-    "           tick: t.backgroundPosition, tickVar: root.getPropertyValue('--i-tick').trim()," +
-    "           dotImage: d.backgroundImage.indexOf('icons.png') !== -1," +
-    "           dotHard: d.imageRendering," +
-    "           dot: d.backgroundPosition, dotVar: root.getPropertyValue('--i-dot').trim() };" +
+    "  var t = getComputedStyle(tick), d = getComputedStyle(dot);" +
+    "  return { tickNative: t.appearance !== 'none' && t.backgroundImage === 'none'," +
+    "           tickAccent: t.accentColor, dotNative: d.appearance !== 'none' && d.backgroundImage === 'none'," +
+    "           dotAccent: d.accentColor };" +
     "})()");
-  check("the sheet also draws the checkbox tick and the radio dot, left hard",
-    marks.tickImage && marks.tick === marks.tickVar && marks.tickHard === "pixelated" &&
-    marks.dotImage && marks.dot === marks.dotVar && marks.dotHard === "pixelated",
-    JSON.stringify(marks));
+  check("the checkbox tick and radio dot are the browser's own, in the page navy",
+    controls.tickNative && controls.dotNative &&
+    controls.tickAccent === "rgb(0, 0, 128)" && controls.dotAccent === "rgb(0, 0, 128)",
+    JSON.stringify(controls));
 
   /* ---- dithered backdrop ---- */
   const backdrop = await evaluate(client,

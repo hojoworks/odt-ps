@@ -88,47 +88,13 @@
    section headings. */
 .group > legend { padding: 0 5px; font-size: 12px; font-weight: 700; }
 
+/* The check and the dot are left to the browser, which draws them sharp at any
+   display scale; the accent colour keeps them in the page's navy. */
 input[type="checkbox"],
 input[type="radio"] {
-  position: relative;
   flex: none;
-  width: 13px;
-  height: 13px;
   margin: 1px 0 0;
-  background: #fff;
-  /* every edge has to be visible on white: dark on the top and left, grey on
-     the bottom and right, the way a Windows field is drawn */
-  border: 1px solid;
-  border-color: var(--darker) var(--dark) var(--dark) var(--darker);
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-input[type="radio"] { border-radius: 50%; }
-
-/* The tick is a cell in the icon sheet: 11x11 is the padding box, so it draws
-   1:1 rather than being scaled, and the tick's own box is 9x7 with an even
-   margin on every side. */
-input[type="checkbox"]:checked {
-  background-image: url("icons.png");
-  background-repeat: no-repeat;
-  background-position: var(--i-tick);
-  /* the cell is a bitmap, so at a fractional display scale it has to be left
-     hard: without this the browser interpolates it and the tick goes soft */
-  image-rendering: pixelated;
-}
-
-input[type="radio"]:checked::after {
-  content: "";
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 7px;
-  height: 7px;
-  background-image: url("icons.png");
-  background-repeat: no-repeat;
-  background-position: var(--i-dot);
-  image-rendering: pixelated;
+  accent-color: var(--navy);
 }
 
 input:focus-visible,

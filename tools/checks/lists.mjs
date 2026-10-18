@@ -213,28 +213,23 @@ export async function run(ctx) {
     JSON.stringify({ faults: languageFaults, languages: languages, order: languageOrder,
       matchOnly: matchOnly }));
 
-  /* Controls: every side of a check box has to be visible on white (the bottom
-     and right used to be white on white), and the radio dot has to be the
-     sheet's 7x7 cell rather than a soft CSS circle. */
+  /* Controls: the check and the dot are the browser's own now, tinted with the
+     page accent, so there is no hand-drawn box to keep visible; the scrollbar
+     thumb still has to be chiselled. */
   const controls = await evaluate(client,
     "(function () {" +
     "  var box = document.querySelector('#apps-body input[type=checkbox]');" +
     "  var radio = document.querySelector('#edition-body input[type=radio]');" +
-    "  var cs = getComputedStyle(box);" +
-    "  var sides = [cs.borderTopColor, cs.borderRightColor, cs.borderBottomColor, cs.borderLeftColor];" +
-    "  var visible = sides.filter(function (c) { return c === 'rgb(0, 0, 0)' || c === 'rgb(128, 128, 128)'; }).length;" +
-    "  var dot = getComputedStyle(radio, '::after');" +
-    "  var root = getComputedStyle(document.documentElement);" +
+    "  var b = getComputedStyle(box), r = getComputedStyle(radio);" +
     "  var thumb = getComputedStyle(document.querySelector('.setup-content'), '::-webkit-scrollbar-thumb');" +
-    "  return { sides: sides.join(' | '), visible: visible," +
-    "           dotImage: dot.backgroundImage.indexOf('icons.png') !== -1," +
-    "           dotSize: dot.width + ' by ' + dot.height, dot: dot.backgroundPosition," +
-    "           dotVar: root.getPropertyValue('--i-dot').trim()," +
+    "  return { boxNative: b.appearance !== 'none' && b.backgroundImage === 'none'," +
+    "           radioNative: r.appearance !== 'none' && r.backgroundImage === 'none'," +
+    "           accent: b.accentColor, radioAccent: r.accentColor," +
     "           thumbImage: thumb.backgroundImage.indexOf('linear-gradient') !== -1 };" +
     "})()");
-  check("check boxes show an edge on all four sides, radio dots come from the sheet, scrollbar thumbs chiselled",
-    controls.visible === 4 && controls.dotImage && controls.dotSize === "7px by 7px" &&
-    controls.dot === controls.dotVar && controls.thumbImage === true,
+  check("check boxes and radio dots are the browser's own, in the page navy, scrollbar thumbs chiselled",
+    controls.boxNative && controls.radioNative && controls.accent === "rgb(0, 0, 128)" &&
+    controls.radioAccent === "rgb(0, 0, 128)" && controls.thumbImage === true,
     JSON.stringify(controls));
 
   /* The Apps section is always there, and it always shows a list: a version
@@ -330,11 +325,11 @@ export async function run(ctx) {
     "  var top = Math.max(r.top, box.top), bottom = Math.min(r.bottom, box.bottom);" +
     "  var left = Math.max(r.left, box.left), right = Math.min(r.right, box.right);" +
     "  var visible = bottom - top >= 4 && right - left >= 4;" +
+    "  var input = row.querySelector('input');" +
+    "  var cs = getComputedStyle(input);" +
     "  return { x: Math.round((left + right) / 2), y: Math.round((top + bottom) / 2)," +
-    "           visible: visible, ticked: row.querySelector('input').checked," +
-    "           restingTick: getComputedStyle(row.querySelector('input')).backgroundPosition," +
-    "           restingImage: getComputedStyle(row.querySelector('input')).backgroundImage," +
-    "           restingVar: getComputedStyle(document.documentElement).getPropertyValue('--i-tick').trim() };" +
+    "           visible: visible, ticked: input.checked," +
+    "           restingAppearance: cs.appearance, restingAccent: cs.accentColor };" +
     "})()");
   const hover = { on: false };
   for (let attempt = 0; attempt < 3 && hover.on !== true; attempt++) {
@@ -347,26 +342,19 @@ export async function run(ctx) {
       "(function () {" +
       "  var row = document.querySelectorAll('#version-body .pick-list .pick')[0];" +
       "  var input = row.querySelector('input');" +
+      "  var cs = getComputedStyle(input);" +
+      "  var r = input.getBoundingClientRect();" +
       "  return { on: row.matches(':hover'), rowBg: getComputedStyle(row).backgroundColor," +
-      "           boxBg: getComputedStyle(input).backgroundColor," +
-      "           boxBorder: getComputedStyle(input).borderTopColor," +
-      "           tick: getComputedStyle(input).backgroundPosition," +
-      "           tickImage: getComputedStyle(input).backgroundImage," +
-      "           whiteVar: getComputedStyle(document.documentElement).getPropertyValue('--i-tick-white').trim() };" +
+      "           appearance: cs.appearance, accent: cs.accentColor, w: r.width, h: r.height };" +
       "})()"));
   }
-  /* The tick is a cell in the icon sheet: the resting row draws the navy cell,
-     the navy row draws the white one from the same sheet -- and the image has to
-     stay there at all, which a `background` shorthand on the hover rule would
-     quietly wipe out. */
-  check("a hovered row inverts its checkbox so the tick stays visible",
+  /* The browser paints the native box, so the navy highlight cannot swallow it;
+     it only has to still be there, tinted with the page accent. */
+  check("a hovered row keeps its native check box over the navy highlight",
     hoverPoint.visible === true && hoverPoint.ticked === true && hover.on === true &&
-    hoverPoint.restingImage.indexOf("icons.png") !== -1 &&
-    hoverPoint.restingTick === hoverPoint.restingVar &&
-    hover.rowBg === "rgb(0, 0, 128)" && hover.boxBg === "rgb(0, 0, 128)" &&
-    hover.boxBorder === "rgb(255, 255, 255)" &&
-    hover.tickImage.indexOf("icons.png") !== -1 && hover.tick === hover.whiteVar &&
-    hover.tick !== hoverPoint.restingTick,
+    hoverPoint.restingAppearance !== "none" && hoverPoint.restingAccent === "rgb(0, 0, 128)" &&
+    hover.rowBg === "rgb(0, 0, 128)" && hover.appearance !== "none" &&
+    hover.accent === "rgb(0, 0, 128)" && hover.w > 0 && hover.h > 0,
     JSON.stringify({ point: hoverPoint, hover: hover }));
 
   /* Park the pointer away from the window again, so later checks see resting
