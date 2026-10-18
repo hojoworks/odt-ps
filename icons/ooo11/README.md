@@ -22,7 +22,7 @@ licensed. A copy of the licence is kept at `LICENSE` in the repository root.
 **Changes made** (Apache License 2.0, section 4b): each icon was scaled to
 16×16 with a box filter, hard-edged (alpha thresholded at 50%), and quantised
 to the 16-colour Windows 9x palette the rest of the screen uses. The result is
-painted into `site/icons.png`, with one background position per icon in
+painted into `site/icons.png`, with one position per icon in
 `site/icons.css`, by:
 
     node tools/make-icons.mjs
@@ -48,7 +48,7 @@ splits the sprite on the empty columns, and keeps each size that the page uses:
 | `save_OOo1.png` | `#i-save-16` | `#i-save-26` | the configuration.xml card and its Save button |
 | `copy_OOo1.png` | `#i-copy-16` | `#i-copy-26` | every Copy button and the one-liner card |
 | `open_OOo1.png` | `#i-open-16` | `#i-open-26` | the Office Deployment Tool card and its download link |
-| `help_OOo1.png` | `#i-help-16` |  | the Home/EEA and Access Runtime version rows, and the Help card |
+| `help_OOo1.png` | `#i-help-16` |  | the Home/EEA and Access Runtime version rows |
 | `hyperlink_OOo1.png` | `#i-link-16` |  | the Source code rail link |
 | `paste_OOo1.png` | `#i-paste-16` |  | OneNote in the apps list |
 | `cellaligntop_OOo1.png` | `#i-align-16` |  | both OneDrive rows |

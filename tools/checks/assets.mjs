@@ -11,17 +11,17 @@ export async function run(ctx) {
     "  var a = getComputedStyle(small), b = getComputedStyle(large);" +
     "  return { image: a.backgroundImage.indexOf('icons.png') !== -1," +
     "           repeat: a.backgroundRepeat, small: a.backgroundPosition, large: b.backgroundPosition," +
-    "           smallSize: small.getBoundingClientRect().width, largeSize: large.getBoundingClientRect().width," +
+    "           smallSize: a.width, largeSize: b.width," +
     "           rendering: a.imageRendering, symbols: document.querySelectorAll('symbol').length };" +
     "})()");
   check("icons paint from one sheet, 16 and 26 px at their own size, no inline symbols",
     sprite.image && sprite.repeat === "no-repeat" && sprite.small === "-96px 0px" &&
-    sprite.large === "0px -16px" && sprite.smallSize === 16 && sprite.largeSize === 26 &&
+    sprite.large === "0px -16px" && sprite.smallSize === "16px" && sprite.largeSize === "26px" &&
     sprite.rendering === "pixelated" && sprite.symbols === 0, JSON.stringify(sprite));
 
   /* The marks with no class of their own reach for the same positions as a
-     custom property, so a checked box and a rail step are drawn from the sheet
-     rather than a second copy of the artwork. */
+     custom property, so a checked box, a radio dot and a rail step are drawn
+     from the sheet rather than a second copy of the artwork. */
   const marks = await evaluate(client,
     "(function () {" +
     "  var tick = document.querySelector('#apps-body input[type=checkbox]:checked');" +

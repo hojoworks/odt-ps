@@ -2,13 +2,11 @@
 
 /* ---------------------------------------------------------------- widgets */
 
-/* An icon is a window onto the generated sheet: the size says how much of it
-   to show, the `.i-*` rule in icons.css says where. Both are set from a
-   class, so the page carries no SVG symbol definitions at all. */
+/* An icon is a window onto the generated sheet: the size class says how much of
+   it to show, the `.i-*` rule in icons.css says where, so the page carries no
+   SVG symbol definitions at all. */
 .icon {
   display: inline-block;
-  width: 16px;
-  height: 16px;
   flex: none;
   background-image: url("icons.png");
   background-repeat: no-repeat;
@@ -217,8 +215,7 @@ select {
 /* Disclosures (Advanced options, Manual Install) have to read as something you
    can open: a caption bar with a triangle, a hover state, and the pointer. */
 .advanced > summary,
-.manual > summary,
-#s-notes summary { cursor: pointer; font-weight: 700; list-style: none; }
+.manual > summary { cursor: pointer; font-weight: 700; list-style: none; }
 .advanced > summary::-webkit-details-marker,
 .manual > summary::-webkit-details-marker { display: none; }
 

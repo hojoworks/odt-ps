@@ -66,33 +66,33 @@ const SIZE = 16;
    version where the page uses it; anything not referenced in site/ is not
    generated at all. */
 const ICONS = [
-  { file: "ooo11-writer-doc.ico", id: "i-doc", note: "text document" },
-  { file: "ooo11-calc-doc.ico", id: "i-grid", note: "spreadsheet" },
-  { file: "ooo11-impress-doc.ico", id: "i-slide", note: "presentation" },
-  { file: "ooo11-base-doc.ico", id: "i-db", note: "database" },
-  { file: "ooo11-draw-doc.ico", id: "i-shapes", note: "drawing" },
-  { file: "ooo11-chart-doc.ico", id: "i-chart", note: "chart" }
+  { file: "ooo11-writer-doc.ico", id: "i-doc" },
+  { file: "ooo11-calc-doc.ico", id: "i-grid" },
+  { file: "ooo11-impress-doc.ico", id: "i-slide" },
+  { file: "ooo11-base-doc.ico", id: "i-db" },
+  { file: "ooo11-draw-doc.ico", id: "i-shapes" },
+  { file: "ooo11-chart-doc.ico", id: "i-chart" }
 ];
 
 /* The OO.org 1.1 toolbar icons live on openoffice.org as 72x32 sprites holding
    the small (16x16) and the large (26x26) version side by side. `large` is only
    generated for the ones a heading uses. */
 const TOOLBAR = [
-  { file: "save_OOo1.png", small: "i-save-16", large: "i-save-26", note: "save" },
-  { file: "copy_OOo1.png", small: "i-copy-16", large: "i-copy-26", note: "copy" },
-  { file: "open_OOo1.png", small: "i-open-16", large: "i-open-26", note: "open" },
-  { file: "help_OOo1.png", small: "i-help-16", note: "help" },
-  { file: "hyperlink_OOo1.png", small: "i-link-16", note: "hyperlink" },
-  { file: "hyperlink_OOo2.png", small: "i-hyperlink-16", note: "hyperlink, 2.1" },
-  { file: "paste_OOo1.png", small: "i-paste-16", note: "paste" },
-  { file: "cellaligntop_OOo1.png", small: "i-align-16", note: "cell align top" },
-  { file: "text_OOo1.png", small: "i-text-16", note: "text" },
-  { file: "spellcheck_OOo1.png", small: "i-spellcheck-16", note: "spellcheck" },
-  { file: "navigator_OOo1.png", small: "i-navigator-16", note: "navigator" },
-  { file: "plugin_OOo1.png", small: "i-plugin-16", note: "plugin" },
-  { file: "ok_OOo1.png", small: "i-ok-16", note: "ok" },
-  { file: "insertcolumn_OOo1.png", small: "i-column-16", note: "insert column" },
-  { file: "stylist_OOo1.png", small: "i-stylist-16", note: "stylist" }
+  { file: "save_OOo1.png", small: "i-save-16", large: "i-save-26" },
+  { file: "copy_OOo1.png", small: "i-copy-16", large: "i-copy-26" },
+  { file: "open_OOo1.png", small: "i-open-16", large: "i-open-26" },
+  { file: "help_OOo1.png", small: "i-help-16" },
+  { file: "hyperlink_OOo1.png", small: "i-link-16" },
+  { file: "hyperlink_OOo2.png", small: "i-hyperlink-16" },
+  { file: "paste_OOo1.png", small: "i-paste-16" },
+  { file: "cellaligntop_OOo1.png", small: "i-align-16" },
+  { file: "text_OOo1.png", small: "i-text-16" },
+  { file: "spellcheck_OOo1.png", small: "i-spellcheck-16" },
+  { file: "navigator_OOo1.png", small: "i-navigator-16" },
+  { file: "plugin_OOo1.png", small: "i-plugin-16" },
+  { file: "ok_OOo1.png", small: "i-ok-16" },
+  { file: "insertcolumn_OOo1.png", small: "i-column-16" },
+  { file: "stylist_OOo1.png", small: "i-stylist-16" }
 ];
 const SMALL = 16;
 const LARGE = 26;
@@ -381,20 +381,6 @@ TOOLBAR.forEach((icon) => {
       grid.filter((c) => c !== null).length + " solid pixels");
   });
 });
-
-/* The favicon is the same artwork as a standalone file, because a favicon
-   cannot crop a region out of the sheet. */
-const FAVICON = process.env.ODT_FAVICON || "i-save-16";
-const favicon = grids[FAVICON];
-if (!favicon) { throw new Error("favicon source " + FAVICON + " was not generated"); }
-const faviconLines = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + favicon.size + " " +
-  favicon.size + '" width="' + favicon.size + '" height="' + favicon.size + '" shape-rendering="crispEdges">'];
-rectangles(favicon.grid, favicon.size).forEach((rect) => {
-  faviconLines.push('  <rect x="' + rect.x + '" y="' + rect.y + '" width="' + rect.width +
-    '" height="' + rect.height + '" fill="' + hexColour(PALETTE[rect.colour]) + '"/>');
-});
-faviconLines.push("</svg>");
-writeFileSync(join(root, "site", "favicon.svg"), faviconLines.join("\n") + "\n");
 
 /* The five symbols that used to be hand-written into index.html, in the same form
    as everything else: a character a pixel, a hex digit for a palette colour and a
@@ -688,6 +674,21 @@ writeFileSync(join(root, "site", "icons.css"), rules.join("\n") + "\n");
 console.log("wrote site/icons.png (" + sheetWidth + "x" + sheetHeight + ", " +
   rows.map((row) => row.ids.length + " at " + row.size + "px").join(", ") + ")");
 console.log("wrote site/icons.css with " + Object.keys(places).length + " places");
+
+/* The favicon is the same artwork as a standalone file, because a favicon cannot
+   crop a region out of the sheet. Its source may be any icon the tool has, the
+   OpenOffice ones or the drawn marks. */
+const FAVICON = process.env.ODT_FAVICON || "i-save-16";
+const favicon = grids[FAVICON];
+if (!favicon) { throw new Error("favicon source " + FAVICON + " was not generated"); }
+const faviconLines = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + favicon.size + " " +
+  favicon.size + '" width="' + favicon.size + '" height="' + favicon.size + '" shape-rendering="crispEdges">'];
+rectangles(favicon.grid, favicon.size).forEach((rect) => {
+  faviconLines.push('  <rect x="' + rect.x + '" y="' + rect.y + '" width="' + rect.width +
+    '" height="' + rect.height + '" fill="' + hexColour(PALETTE[rect.colour]) + '"/>');
+});
+faviconLines.push("</svg>");
+writeFileSync(join(root, "site", "favicon.svg"), faviconLines.join("\n") + "\n");
 
 console.log(report.join("\n"));
 console.log("wrote " + Object.keys(places).length + " places, all from one sheet");

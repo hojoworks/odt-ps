@@ -347,14 +347,13 @@ verify("presets: the other three leave out the business apps and nothing else",
 /* 14. Icons. The page draws from one generated sheet: every icon name it
    reaches for has to have a place in icons.css, every place has to be used,
    and the sheet itself has to stay inside the 16-colour palette. */
-const page = readFileSync(join(root, "site", "index.html"), "utf8");
 const siteFiles = ["site/ui.js", "site/setup-core.js", "site/setup-sections.js", "site/setup-rail.js",
   "site/wizard.js", "site/odt-data.js"];
 /* The stylesheets count too: the tick, the scrollbar arrows and the rail marker
    have no class of their own, so they reach for `var(--i-name)` instead. */
 const styleFiles = ["site/base.css", "site/rail.css", "site/content.css", "site/pick.css",
   "site/scrollbars.css", "site/controls.css", "site/narrow.css"];
-const markupSources = [page].concat(siteFiles.map((file) => readFileSync(join(root, file), "utf8"))).join("\n");
+const markupSources = [markup].concat(siteFiles.map((file) => readFileSync(join(root, file), "utf8"))).join("\n");
 const styleSources = styleFiles.map((file) => readFileSync(join(root, file), "utf8")).join("\n");
 const sources = markupSources + "\n" + styleSources;
 const iconCss = readFileSync(join(root, "site", "icons.css"), "utf8");
@@ -378,9 +377,9 @@ verify("icons: no unused places in the sheet (" + definedIcons.size + " placed, 
   referencedIcons.length + " used)", unusedIcons.length === 0, unusedIcons.join(", "));
 
 verify("icons: the page links the generated sheet, and carries no inline symbol",
-  page.includes('<link rel="stylesheet" href="icons.css">') && !page.includes("<symbol") &&
-  !page.includes("ooo11:start"),
-  page.includes("icons.css") ? "sheet linked" : "icons.css is not linked");
+  markup.includes('<link rel="stylesheet" href="icons.css">') && !markup.includes("<symbol") &&
+  !markup.includes("ooo11:start"),
+  markup.includes("icons.css") ? "sheet linked" : "icons.css is not linked");
 
 const PALETTE16 = new Set(["#000000", "#800000", "#008000", "#808000", "#000080", "#800080", "#008080",
   "#c0c0c0", "#808080", "#ff0000", "#00ff00", "#ffff00", "#0000ff", "#ff00ff", "#00ffff", "#ffffff"]);
