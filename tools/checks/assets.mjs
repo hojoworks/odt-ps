@@ -4,10 +4,13 @@
 export async function run(ctx) {
   const { client, check, evaluate, wait, waitFor, pickVersion, XML_IS_CONSISTENT } = ctx;
   /* ---- the icon sheet ---- */
+  /* Both icons are in the always-rendered window chrome: the 26px one used to be
+     the Manual Install heading, which sits in a shut <details>, and Chrome gives
+     an element in skipped content a width of 0 wherever it runs. */
   const sprite = await evaluate(client,
     "(function () {" +
     "  var small = document.querySelector('.icon.i-save-16');" +
-    "  var large = document.querySelector('.icon.i-save-26');" +
+    "  var large = document.querySelector('.icon.i-copy-26');" +
     "  var a = getComputedStyle(small), b = getComputedStyle(large);" +
     "  return { image: a.backgroundImage.indexOf('icons.png') !== -1," +
     "           repeat: a.backgroundRepeat, small: a.backgroundPosition, large: b.backgroundPosition," +
@@ -16,7 +19,7 @@ export async function run(ctx) {
     "})()");
   check("icons paint from one sheet, 16 and 26 px at their own size, no inline symbols",
     sprite.image && sprite.repeat === "no-repeat" && sprite.small === "-96px 0px" &&
-    sprite.large === "0px -16px" && sprite.smallSize === "16px" && sprite.largeSize === "26px" &&
+    sprite.large === "-26px -16px" && sprite.smallSize === "16px" && sprite.largeSize === "26px" &&
     sprite.rendering === "pixelated" && sprite.symbols === 0, JSON.stringify(sprite));
 
   /* The marks with no class of their own reach for the same positions as a
