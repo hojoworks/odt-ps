@@ -380,7 +380,7 @@
     html.push('<fieldset class="group"><ul class="check-list">');
     [
       ["removeMsi", "Uninstall older MSI-based Office first", "for Office 2016 or older"],
-      ["removeExisting", "Remove MSI Office in every language", "otherwise only matching languages go"],
+      ["removeExisting", "Uninstall Click-to-Run Office already installed", "Project and Visio too; for a clean reinstall"],
       ["keepUpdated", "Keep Office updated automatically", ""],
       ["sharedComputer", "Shared computer licensing", "Remote Desktop or multi-user PCs"],
       ["deviceBased", "Device-based licensing", "365 Apps only"],
@@ -389,10 +389,8 @@
     ].forEach(function (row) {
       var key = row[0];
       var checked = key === "displayLevelFull" ? state.displayLevel === "Full" : !!state[key];
-      /* the wider MSI removal is a sub-option of the plain one */
-      var blocked = key === "removeExisting" && !state.removeMsi;
-      html.push('<li><label' + (blocked ? ' class="dim"' : "") + '><input type="checkbox" data-opt="' + key + '"' +
-        (checked ? " checked" : "") + (blocked ? " disabled" : "") + ">" +
+      html.push('<li><label><input type="checkbox" data-opt="' + key + '"' +
+        (checked ? " checked" : "") + ">" +
         "<span>" + escapeHtml(row[1]) + (row[2] ? ' <span class="mini">&middot; ' + escapeHtml(row[2]) + "</span>" : "") + "</span></label></li>");
     });
     html.push("</ul></fieldset>");

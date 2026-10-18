@@ -161,7 +161,7 @@ const rowText = JSON.stringify(rows);
 check("summary: every row is labelled",
   ["Version", "Also installing", "Channel", "Build", "Edition", "Languages", "Excluding", "Options"]
     .every((label) => rowText.includes(`"${label}"`)), true, rowText);
-contains("summary: language names", rowText, "English, German");
+contains("summary: language names", rowText, "English (US), German");
 contains("summary: exclusions", rowText, "Microsoft Teams");
 
 /* 10. Version handling. */

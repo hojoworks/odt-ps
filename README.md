@@ -40,7 +40,7 @@ the line yourself.
 | `-Arch` | `64` or `32`. LTSC 2024 is 64-bit only |
 | `-Languages` | Culture codes, for example `en-us,de-de` |
 | `-Exclude` | `ExcludeApp` IDs, for example `Publisher,Teams,Groove` |
-| `-Version` | A pinned build such as `16.0.17928.20156`, or `MatchInstalled` |
+| `-Version` | A pinned build such as `16.0.17928.20156`, or `MatchInstalled` (install only, never with `-Download`) |
 | `-Download` / `-Install` | Which steps to run. Both run when neither is given |
 | `-RemoveAll` | Uninstall every Click-to-Run product on the machine |
 | `-ShowWindow` | Show Microsoft's setup window instead of installing silently |

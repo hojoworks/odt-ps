@@ -48,8 +48,14 @@ if (languages.length < 80) {
 const first = languages.findIndex((language) => language.id === "en-us");
 if (first > 0) { languages.unshift(languages.splice(first, 1)[0]); }
 
+/* Microsoft's own names are terse where the pick list needs two English rows to
+   tell apart ("English" and "English UK"). Only the label changes here: the
+   culture code is what goes in configuration.xml and is left as published. */
+const DISPLAY_NAMES = { "en-us": "English (US)", "en-gb": "English (UK)" };
+const displayName = (language) => DISPLAY_NAMES[language.id] || language.name;
+
 const block = "ODT.languages = [\n" +
-  languages.map((language) => "  { id: '" + language.id + "', name: '" + language.name.replace(/'/g, "\\'") + "' }").join(",\n") +
+  languages.map((language) => "  { id: '" + language.id + "', name: '" + displayName(language).replace(/'/g, "\\'") + "' }").join(",\n") +
   "\n];";
 
 const dataPath = join(root, "site", "odt-data.js");

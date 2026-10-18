@@ -381,10 +381,12 @@ foreach ($app in $script:Apps) { $script:AppMap[$app.Id] = $app }
 
 # Language IDs from Microsoft's "Overview of deploying languages for Microsoft
 # 365 Apps" table: the 95 cultures the ODT can install, in Microsoft's order with
-# English (United States) first. tools/make-languages.mjs rebuilds the setup
-# page's copy from the same table, so keep the two in step.
+# English (United States) first. The text after the pipe is a display label only;
+# the two English rows spell out their region so they can be told apart.
+# tools/make-languages.mjs rebuilds the setup page's copy from the same table, so
+# keep the two in step.
 $script:LanguageList = @(
-    'en-us|English',
+    'en-us|English (US)',
     'af-za|Afrikaans',
     'sq-al|Albanian',
     'ar-sa|Arabic',
@@ -404,7 +406,7 @@ $script:LanguageList = @(
     'cs-cz|Czech',
     'da-dk|Danish',
     'nl-nl|Dutch',
-    'en-gb|English UK',
+    'en-gb|English (UK)',
     'et-ee|Estonian',
     'fi-fi|Finnish',
     'fr-fr|French',
@@ -1041,6 +1043,13 @@ function Invoke-Headless {
     elseif ($Download) { $action = 'download' }
     elseif ($Install) { $action = 'install' }
     else { $action = 'download+install' }
+
+    # MatchInstalled asks setup.exe to read the languages already on the PC, which
+    # it can only do in a configure run. Microsoft's own note: /download cannot be
+    # used on a configuration file that contains MatchInstalled.
+    if ($script:Session.Version -eq 'MatchInstalled' -and $action -ne 'install') {
+        throw 'Version=MatchInstalled cannot be used with setup.exe /download. Run with -Install on its own.'
+    }
 
     # A successful install has no further use for the files, so the folder goes,
     # unless the run was a download on its own, which means the files were the point.

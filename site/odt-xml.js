@@ -135,17 +135,16 @@ window.ODT = window.ODT || {};
 
     lines.push('  </Add>');
 
-    /* <Remove> is only valid inside <RemoveMSI>: on its own the file is rejected.
-       Without it, <RemoveMSI /> takes out the MSI installs that share a language
-       with what we are installing; All="TRUE" takes out every language. */
-    if (state.removeMsi || state.removeExisting) {
-      if (state.removeExisting) {
-        lines.push('  <RemoveMSI>');
-        lines.push('    <Remove All="TRUE" />');
-        lines.push('  </RemoveMSI>');
-      } else {
-        lines.push('  <RemoveMSI />');
-      }
+    /* Two separate Microsoft elements, not one nested inside the other:
+       <Remove All="TRUE" /> is a Configuration-level element that uninstalls the
+       Click-to-Run Office already on the PC, Project and Visio included.
+       <RemoveMSI /> uninstalls the MSI (2007-2016) versions instead, and its only
+       documented child is <IgnoreProduct>. */
+    if (state.removeExisting) {
+      lines.push('  <Remove All="TRUE" />');
+    }
+    if (state.removeMsi) {
+      lines.push('  <RemoveMSI />');
     }
     lines.push('  <Updates Enabled="' + (state.keepUpdated ? 'TRUE' : 'FALSE') + '" />');
     lines.push('  <Display Level="' + state.displayLevel + '" AcceptEULA="' + (state.acceptEula ? 'TRUE' : 'FALSE') + '" />');

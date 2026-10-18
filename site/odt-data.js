@@ -200,7 +200,7 @@ ODT.apps = [
 
 /* Languages, most-requested first so the usual pick is near the top. */
 ODT.languages = [
-  { id: 'en-us', name: 'English' },
+  { id: 'en-us', name: 'English (US)' },
   { id: 'af-za', name: 'Afrikaans' },
   { id: 'sq-al', name: 'Albanian' },
   { id: 'ar-sa', name: 'Arabic' },
@@ -220,7 +220,7 @@ ODT.languages = [
   { id: 'cs-cz', name: 'Czech' },
   { id: 'da-dk', name: 'Danish' },
   { id: 'nl-nl', name: 'Dutch' },
-  { id: 'en-gb', name: 'English UK' },
+  { id: 'en-gb', name: 'English (UK)' },
   { id: 'et-ee', name: 'Estonian' },
   { id: 'fi-fi', name: 'Finnish' },
   { id: 'fr-fr', name: 'French' },
