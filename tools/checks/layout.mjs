@@ -138,16 +138,15 @@ export async function run(ctx) {
     "  return { view: view, fits: fits," +
     "           outside: fits.filter(function (b) { return b.left < -1 || b.right > view + 1; })," +
     "           railDisplay: getComputedStyle(rail).display," +
-    "           railColumns: getComputedStyle(rail).gridTemplateColumns.split(' ').length > 1," +
     "           titleHidden: getComputedStyle(document.querySelector('.screen-title')).display === 'none' };" +
     "})()");
   await client.send("Emulation.clearDeviceMetricsOverride");
   await wait(350);
   check("a narrow window stacks to one column, drops the rail, and nothing sticks out sideways",
-    narrow.outside.length === 0 && narrow.railDisplay === "grid" && narrow.railDisplay === "none" &&
+    narrow.outside.length === 0 && narrow.railDisplay === "none" &&
     narrow.titleHidden === true,
     JSON.stringify({ view: narrow.view, outside: narrow.outside, railDisplay: narrow.railDisplay,
-      railColumns: narrow.railColumns, titleHidden: narrow.titleHidden }));
+      titleHidden: narrow.titleHidden }));
 
   /* The rail's parts are held apart: the settings well sits off the steps, and
      the links sit furthest off all. */
