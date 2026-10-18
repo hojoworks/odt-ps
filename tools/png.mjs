@@ -136,6 +136,6 @@ export function encodePalettePng({ width, height, colours, indices, transparent 
   ]);
   const parts = [SIGNATURE, chunk("IHDR", header), chunk("PLTE", palette)];
   if (transparent) { parts.push(chunk("tRNS", Buffer.from([0]))); }
-  parts.push(chunk("IDAT", deflateSync(rows)), chunk("IEND", Buffer.alloc(0)));
+  parts.push(chunk("IDAT", deflateSync(rows, { level: 9 })), chunk("IEND", Buffer.alloc(0)));
   return Buffer.concat(parts);
 }

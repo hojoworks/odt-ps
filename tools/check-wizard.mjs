@@ -357,10 +357,11 @@ const markupSources = [markup].concat(siteFiles.map((file) => readFileSync(join(
 const styleSources = styleFiles.map((file) => readFileSync(join(root, file), "utf8")).join("\n");
 const sources = markupSources + "\n" + styleSources;
 const iconCss = readFileSync(join(root, "site", "icons.css"), "utf8");
-const definedIcons = new Set([...iconCss.matchAll(/^\s+--(i-[a-z0-9-]+): -?\d+px -?\d+px;$/gm)]
+const definedVars = new Set([...iconCss.matchAll(/^\s+--(i-[a-z0-9-]+): -?\d+px -?\d+px;$/gm)]
   .map((match) => match[1]));
-const classIcons = new Set([...iconCss.matchAll(/^\.(i-[a-z0-9-]+) \{ background-position: var\(--/gm)]
+const classIcons = new Set([...iconCss.matchAll(/^\.(i-[a-z0-9-]+) \{ background-position: /gm)]
   .map((match) => match[1]));
+const definedIcons = new Set([...definedVars, ...classIcons]);
 const referencedInMarkup = [...new Set([...markupSources.matchAll(/\b(i-[a-z0-9-]+)\b/g)]
   .map((match) => match[1]))].sort();
 const missingClasses = referencedInMarkup.filter((id) => !classIcons.has(id));
@@ -401,6 +402,16 @@ verify("icons: the sheet is 416x82, transparent behind the drawings, and palette
 const ooo11 = ["i-doc", "i-grid", "i-slide", "i-db", "i-shapes", "i-chart"];
 verify("icons: the six OO11 document pictograms have a place in the sheet",
   ooo11.every((id) => definedIcons.has(id)), ooo11.filter((id) => !definedIcons.has(id)).join(", "));
+
+/* 14c. The favicon is the same artwork as a standalone PNG, doubled so a 32px
+   slot is as crisp as the 16px one: the SVG it used to be was larger than the
+   whole sheet, and a favicon cannot crop a region out of it. */
+const faviconPng = readFileSync(join(root, "site", "favicon.png"));
+verify("favicon: a 32x32 PNG, linked instead of the old SVG",
+  faviconPng.subarray(0, 8).toString("hex") === "89504e470d0a1a0a" &&
+  faviconPng.readUInt32BE(16) === 32 && faviconPng.readUInt32BE(20) === 32 &&
+  markup.includes('type="image/png" href="favicon.png"') && !markup.includes("favicon.svg"),
+  faviconPng.readUInt32BE(16) + "x" + faviconPng.readUInt32BE(20));
 
 /* 14. Nothing is chosen until a version is picked. */
 const none = { ...base, product: "" };

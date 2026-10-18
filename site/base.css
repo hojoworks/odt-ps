@@ -162,8 +162,6 @@ body.setup-screen {
   border-color: var(--light) var(--darker) var(--darker) var(--light);
 }
 
-.icon.sys { width: 16px; height: 16px; }
-
 .setup-body {
   display: grid;
   grid-template-columns: var(--rail-width) minmax(0, 1fr);

@@ -63,7 +63,8 @@ splits the sprite on the empty columns, and keeps each size that the page uses:
 
 A 26px version exists only for save, copy and open, where a card heading uses
 one: a size nothing points at is not generated, and the browser-free checks
-fail if any place in the sheet is left unreferenced.
+fail if any place in the sheet is left unreferenced. A toolbar source the page
+does not use is not vendored, the same as the document set.
 
 The sheet is a palette PNG, so the drawings cost a couple of kilobytes rather
 than a block of markup. It also carries the page's own marks — the checkbox
