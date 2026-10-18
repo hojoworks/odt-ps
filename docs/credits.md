@@ -4,8 +4,8 @@
 
 Two sets, deliberately kept apart:
 
-**Drawn for this project (Apache 2.0, like the rest of the repository).** Six symbols: the floppy, the three system buttons,
-the box, mail, plus the two fallback shapes the row renderers keep for an unknown id. They are
+**Drawn for this project (Apache 2.0, like the rest of the repository).** Five symbols: the three system buttons on the caption, and the two fallback shapes the row renderers keep for an
+unknown id, a box and an envelope. The floppy is not drawn: it comes from the OpenOffice.org artwork above. They are
 drawn on a 16×16 grid following Windows 9x conventions:
 
 * one-pixel black outline around every shape

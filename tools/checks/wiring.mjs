@@ -31,6 +31,20 @@ export async function run(ctx) {
     wiring.channelHeight === 72, JSON.stringify(wiring));
   check("the page's XML matches the builder for the changed state", wiring.xmlConsistent === true);
 
+/* The shared vocabulary is assigned one name at a time, so a name that throws
+   silently drops every name after it. The list below is built from the other
+   files' own references, so this catches a typo in any of them too. */
+const coreApi = await evaluate(client,
+  "(function () {" +
+  "  var core = window.SETUP.core || {};" +
+  "  var missing = " + JSON.stringify(wanted) + ".filter(function (name) {" +
+  "    return !(name in core); });" +
+  "  return { missing: missing, exported: Object.keys(core).length };" +
+  "})()");
+check("every name the files reach for on the shared core is actually there",
+  coreApi.missing.length === 0 && coreApi.exported > 20,
+  JSON.stringify({ missing: coreApi.missing, exported: coreApi.exported }));
+
   await evaluate(client,
     "(function () {" +
     "  var radio = document.querySelector('#build-body input[name=\"versionMode\"][value=\"installed\"]');" +
