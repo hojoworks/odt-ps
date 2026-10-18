@@ -31,8 +31,8 @@
 .i-open-26 { background-position: -52px -16px; }
 
 :root {
-  --i-arrow-up: 0px -42px;
-  --i-arrow-down: -12px -42px;
-  --i-arrow-left: -24px -42px;
-  --i-arrow-right: -36px -42px;
+  --i-arrow-up: -78px -16px;
+  --i-arrow-down: -90px -16px;
+  --i-arrow-left: -102px -16px;
+  --i-arrow-right: -114px -16px;
 }

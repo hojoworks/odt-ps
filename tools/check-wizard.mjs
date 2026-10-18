@@ -393,8 +393,8 @@ for (let i = 0; i < sheet.width * sheet.height; i++) {
     sheet.pixels[i * 4 + channel].toString(16).padStart(2, "0")).join(""));
 }
 const offPalette = [...sheetColours].filter((colour) => !PALETTE16.has(colour));
-verify("icons: the sheet is 416x54, transparent behind the drawings, and palette-only",
-  sheet.width === 416 && sheet.height === 54 && sheetTransparent && offPalette.length === 0,
+verify("icons: the sheet is 416x42, transparent behind the drawings, and palette-only",
+  sheet.width === 416 && sheet.height === 42 && sheetTransparent && offPalette.length === 0,
   sheet.width + "x" + sheet.height + ", " + sheetColours.size + " colours" +
   (sheetTransparent ? "" : ", no transparency") + (offPalette.length ? ", off palette: " + offPalette.join(", ") : ""));
 

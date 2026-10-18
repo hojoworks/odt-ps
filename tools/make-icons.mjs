@@ -506,13 +506,13 @@ const ORNAMENTS = [
 ];
 
 /* ---------------------------------------------------------------------------
- * The same icons as one PNG, plus a custom property per icon saying where it
- * sits in it. Rows are ordered by size: the 16px icons along the top, the 26px
- * ones under them, then the smaller marks, each at its own size so nothing is
- * ever scaled. Both files are committed and the page links them, which is why
- * this is a sheet rather than an .svg per icon: a page opened straight off disk
- * cannot resolve an external <use href="file.svg#id">, and a separate request
- * per icon is a worse trade than one image.
+ * The same icons as one PNG, plus a position per icon saying where it sits in
+ * it. The 16px icons run along the top; everything else shares the band below,
+ * packed left to right by size, each at its own size so nothing is ever scaled.
+ * Both files are committed and the page links them, which is why this is a
+ * sheet rather than an .svg per icon: a page opened straight off disk cannot
+ * resolve an external <use href="file.svg#id">, and a separate request per icon
+ * is a worse trade than one image.
  * --------------------------------------------------------------------------- */
 /* The hand-drawn icons and ornaments join the sheet and nothing else: every
    icon the page shows comes from one image, placed by one set of positions. */
@@ -527,19 +527,18 @@ DRAWN.concat(ORNAMENTS).forEach((icon) => {
   };
 });
 
-const rowSizes = [SIZE, LARGE].concat([...new Set(Object.values(grids).map((entry) => entry.size))]
-  .filter((size) => size !== SIZE && size !== LARGE)
-  .sort((a, b) => b - a));
-const rows = rowSizes.map((size) => ({
+const smalls = Object.keys(grids).filter((id) => grids[id].size === SIZE);
+const bandSizes = [...new Set(Object.values(grids).map((entry) => entry.size))]
+  .filter((size) => size !== SIZE)
+  .sort((a, b) => b - a);
+const band = bandSizes.map((size) => ({
   size: size,
   ids: Object.keys(grids).filter((id) => grids[id].size === size)
 }));
-const sheetWidth = Math.max.apply(null, rows.map((row) => row.ids.length * row.size));
-let sheetHeight = 0;
-rows.forEach((row) => {
-  row.y = sheetHeight;
-  sheetHeight += row.size;
-});
+const bandHeight = bandSizes[0] || 0;
+const packedWidth = band.reduce((total, group) => total + group.ids.length * group.size, 0);
+const sheetWidth = Math.max(smalls.length * SIZE, packedWidth);
+const sheetHeight = SIZE + bandHeight;
 const indices = Buffer.alloc(sheetWidth * sheetHeight);
 const places = {};
 const variableOnly = new Set(ORNAMENTS.map((icon) => icon.id));
@@ -554,8 +553,13 @@ function place(id, x0, y0) {
   }
   places[id] = { x: x0, y: y0 };
 }
-rows.forEach((row) => {
-  row.ids.forEach((id, index) => place(id, index * row.size, row.y));
+smalls.forEach((id, index) => place(id, index * SIZE, 0));
+let packedX = 0;
+band.forEach((group) => {
+  group.ids.forEach((id) => {
+    place(id, packedX, SIZE);
+    packedX += group.size;
+  });
 });
 
 writeFileSync(join(root, "site", "icons.png"), encodePalettePng({
@@ -584,7 +588,8 @@ rules.push("}");
 writeFileSync(join(root, "site", "icons.css"), rules.join("\n") + "\n");
 
 console.log("wrote site/icons.png (" + sheetWidth + "x" + sheetHeight + ", " +
-  rows.map((row) => row.ids.length + " at " + row.size + "px").join(", ") + ")");
+  smalls.length + " at " + SIZE + "px and " +
+  band.map((group) => group.ids.length + " at " + group.size + "px").join(", ") + ")");
 console.log("wrote site/icons.css with " + Object.keys(places).length + " places");
 
 /* The favicon is the same artwork as a standalone file, because a favicon cannot

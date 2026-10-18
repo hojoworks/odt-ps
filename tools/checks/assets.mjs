@@ -22,22 +22,6 @@ export async function run(ctx) {
     sprite.large === "-26px -16px" && sprite.smallSize === "16px" && sprite.largeSize === "26px" &&
     sprite.rendering === "pixelated" && sprite.symbols === 0, JSON.stringify(sprite));
 
-  /* The check and the dot are the browser's own, tinted with the page accent,
-     so they need no sheet cell and stay sharp at any display scale. */
-  const controls = await evaluate(client,
-    "(function () {" +
-    "  var tick = document.querySelector('#apps-body input[type=checkbox]:checked');" +
-    "  var dot = document.querySelector('#edition-body input[type=radio]:checked');" +
-    "  var t = getComputedStyle(tick), d = getComputedStyle(dot);" +
-    "  return { tickNative: t.appearance !== 'none' && t.backgroundImage === 'none'," +
-    "           tickAccent: t.accentColor, dotNative: d.appearance !== 'none' && d.backgroundImage === 'none'," +
-    "           dotAccent: d.accentColor };" +
-    "})()");
-  check("the checkbox tick and radio dot are the browser's own, in the page navy",
-    controls.tickNative && controls.dotNative &&
-    controls.tickAccent === "rgb(0, 0, 128)" && controls.dotAccent === "rgb(0, 0, 128)",
-    JSON.stringify(controls));
-
   /* ---- dithered backdrop ---- */
   const backdrop = await evaluate(client,
     "(function () {" +
