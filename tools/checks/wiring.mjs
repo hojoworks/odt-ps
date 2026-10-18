@@ -37,7 +37,7 @@ export async function run(ctx) {
 const coreApi = await evaluate(client,
   "(function () {" +
   "  var core = window.SETUP.core || {};" +
-  "  var missing = " + JSON.stringify(wanted) + ".filter(function (name) {" +
+  "  var missing = ["DEFAULTS","GROUPS","SECTIONS","applyPreset","beforeUnloadWarning","buildOneLiner","buildSummaryText","channelInfo","channelLabel","clone","effectiveState","elements","escapeHtml","excludedNames","hasChoices","languageNames","load","replaceState","reset","siteBase","state","toggleInArray","versionName","view"].filter(function (name) {" +
   "    return !(name in core); });" +
   "  return { missing: missing, exported: Object.keys(core).length };" +
   "})()");
