@@ -367,7 +367,12 @@ const referencedInMarkup = [...new Set([...markupSources.matchAll(/\b(i-[a-z0-9-
 const missingClasses = referencedInMarkup.filter((id) => !classIcons.has(id));
 verify("icons: every icon the markup names has a class rule (" + referencedInMarkup.length + " named, " +
   classIcons.size + " classes)", missingClasses.length === 0, missingClasses.join(", "));
-const referencedIcons = [...new Set([...sources.matchAll(/\b(i-[a-z0-9-]+)\b/g)].map((match) => match[1]))].sort();
+const referencedIcons = [...new Set([
+  ...[...sources.matchAll(/\b(i-[a-z0-9-]+)\b/g)].map((match) => match[1]),
+  /* the scrollbar arrows are placed by literal numbers; the check below holds
+     those numbers to the sheet */
+  "i-arrow-up", "i-arrow-down", "i-arrow-left", "i-arrow-right"
+])].sort();
 const missingIcons = referencedIcons.filter((id) => !definedIcons.has(id));
 verify("icons: every icon the page names has a place in the sheet (" + referencedIcons.length + " used, " +
   definedIcons.size + " placed)", missingIcons.length === 0, missingIcons.join(", "));
@@ -397,6 +402,20 @@ verify("icons: the sheet is 416x42, transparent behind the drawings, and palette
   sheet.width === 416 && sheet.height === 42 && sheetTransparent && offPalette.length === 0,
   sheet.width + "x" + sheet.height + ", " + sheetColours.size + " colours" +
   (sheetTransparent ? "" : ", no transparency") + (offPalette.length ? ", off palette: " + offPalette.join(", ") : ""));
+
+/* 14d. WebKit does not resolve custom properties inside scrollbar
+   pseudo-elements, so the four arrow positions are written out in scrollbars.css.
+   Hold them to the sheet's own values, or a repack would silently blank them. */
+const scrollbarCss = readFileSync(join(root, "site", "scrollbars.css"), "utf8");
+const literalArrows = [...scrollbarCss.matchAll(/background-position: (-?\d+px -?\d+px);/g)]
+  .map((match) => match[1]).sort();
+const sheetArrows = ["up", "down", "left", "right"].map((name) => {
+  const match = iconCss.match(new RegExp("--i-arrow-" + name + ": ([^;]+);"));
+  return match ? match[1].trim() : "missing " + name;
+}).sort();
+verify("scrollbars: the four arrow positions match the sheet, written literally for WebKit",
+  JSON.stringify(literalArrows) === JSON.stringify(sheetArrows),
+  literalArrows.join(" | ") + " vs " + sheetArrows.join(" | "));
 
 /* the six document pictograms come from Apache OpenOffice (see icons/ooo11) */
 const ooo11 = ["i-doc", "i-grid", "i-slide", "i-db", "i-shapes", "i-chart"];

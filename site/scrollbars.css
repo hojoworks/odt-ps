@@ -64,7 +64,11 @@
 /* arrow buttons: sunken grey squares with a small black pixel triangle from the
    icon sheet. Each arrow is 6x6 inside its 12x12 cell, drawn at 2px so it stays
    crisp, and all four directions are given: a box that scrolls sideways needs
-   its arrows too. */
+   its arrows too.
+   The positions are written out rather than read from the sheet's custom
+   properties: WebKit does not resolve `var()` inside scrollbar pseudo-elements,
+   so a custom property there paints nothing. The checks compare these four
+   numbers with the sheet's so they cannot drift. */
 :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button {
   display: block;
   width: 16px;
@@ -78,18 +82,18 @@
 }
 
 :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:decrement {
-  background-position: var(--i-arrow-up);
+  background-position: -78px -16px;
 }
 
 :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:increment {
-  background-position: var(--i-arrow-down);
+  background-position: -90px -16px;
 }
 
 :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:decrement {
-  background-position: var(--i-arrow-left);
+  background-position: -102px -16px;
 }
 
 :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:increment {
-  background-position: var(--i-arrow-right);
+  background-position: -114px -16px;
 }
 
