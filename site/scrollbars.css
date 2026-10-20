@@ -100,3 +100,72 @@
   background-position: -114px -16px;
 }
 
+/* ------------------------------------------------ Firefox overlay scrollbars --
+   Firefox has no scrollbar pseudo-elements, so scrollbars.js paints the same
+   bar with real elements over the scrollers. The class is added only in
+   Firefox (or by the browser checks). The extra right padding is the strip the
+   overlay sits in, doing the job the 16px native scrollbar does in Chromium;
+   the xml box also reserves the foot for its horizontal bar. */
+html.ff-bars :is(.setup-content, .setup-rail, .pick-list, .xml-box, .pick-desc p:not(.pick-tally)) {
+  scrollbar-width: none;
+}
+html.ff-bars .setup-content { padding-right: calc(var(--gap) + 16px); }
+html.ff-bars .setup-rail { padding-right: 24px; }
+html.ff-bars .pick-list { padding-right: 17px; }
+/* the short panes carry a more specific padding rule, so the scoped selector
+   below matches it and wins on the same class count */
+html.ff-bars .pick-columns .pick-desc p:not(.pick-tally) { padding-right: 22px; }
+html.ff-bars .xml-box { padding-right: 24px; padding-bottom: 22px; }
+
+.ff-sb,
+.ff-sb-corner {
+  position: fixed;
+  z-index: 4;
+  pointer-events: none;
+}
+.ff-sb { user-select: none; }
+.ff-sb-btn,
+.ff-sb-track,
+.ff-sb-thumb { touch-action: none; }
+.ff-sb-v { width: 16px; }
+.ff-sb-h { height: 16px; }
+.ff-sb-corner { width: 16px; height: 16px; background: #c0c0c0; }
+
+.ff-sb-btn {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: #c0c0c0;
+  background-image: url("icons.png");
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  border: 2px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+  pointer-events: auto;
+}
+.ff-sb-up { top: 0; background-position: var(--i-arrow-up); }
+.ff-sb-down { bottom: 0; background-position: var(--i-arrow-down); }
+.ff-sb-left { left: 0; background-position: var(--i-arrow-left); }
+.ff-sb-right { right: 0; background-position: var(--i-arrow-right); }
+
+.ff-sb-track {
+  position: absolute;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3Crect width='1' height='1' fill='%23c0c0c0'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23c0c0c0'/%3E%3C/svg%3E");
+  background-size: 2px 2px;
+  pointer-events: auto;
+}
+.ff-sb-v .ff-sb-track { top: 16px; bottom: 16px; left: 0; right: 0; }
+.ff-sb-h .ff-sb-track { left: 16px; right: 16px; top: 0; bottom: 0; }
+
+.ff-sb-thumb {
+  position: absolute;
+  background-color: #c0c0c0;
+  border: 1px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+}
+.ff-sb-v .ff-sb-thumb { left: 0; right: 0; }
+.ff-sb-h .ff-sb-thumb { top: 0; bottom: 0; }
+.ff-sb-thumb:hover { background-color: #d4d4d4; }
+.ff-sb-thumb:active { background-color: #a8a8a8; }
+

@@ -239,4 +239,30 @@ export async function run(ctx) {
     atMiddle.before.position === "sticky" && atMiddle.after.fades === true &&
     atBottom.above === true && atBottom.below === false && atBottom.after.display === "none",
     JSON.stringify({ atTop: atTop, atMiddle: atMiddle, atBottom: atBottom }));
+
+  /* The Firefox overlay bars are real elements; Chromium paints its own, so
+     build them here on request and drive one arrow. */
+  const beforeBars = await evaluate(client, "document.querySelectorAll('.ff-sb').length");
+  await evaluate(client, "window.SETUP.scrollbars.enable()");
+  await wait(250);
+  const overlay = await evaluate(client,
+    "(function () {" +
+    "  var content = document.querySelector('.setup-content');" +
+    "  var bar = content.__ffScrollbar && content.__ffScrollbar.vertical;" +
+    "  if (!bar) { return { bars: 0 }; }" +
+    "  var thumb = bar.querySelector('.ff-sb-thumb');" +
+    "  var down = bar.querySelector('.ff-sb-down');" +
+    "  content.scrollTop = Math.round(content.scrollHeight * 0.4);" +
+    "  var start = content.scrollTop;" +
+    "  down.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }));" +
+    "  window.dispatchEvent(new PointerEvent('pointerup'));" +
+    "  return { bars: document.querySelectorAll('.ff-sb').length," +
+    "           display: getComputedStyle(bar).display, thumb: thumb.getBoundingClientRect().height," +
+    "           start: start, after: content.scrollTop," +
+    "           hiddenNative: getComputedStyle(content).scrollbarWidth };" +
+    "})()");
+  check("the Firefox overlay bars are built over the same scrollers and move them",
+    beforeBars === 0 && overlay.bars >= 1 && overlay.display !== "none" &&
+    overlay.thumb > 0 && overlay.hiddenNative === "none" && overlay.after > overlay.start,
+    JSON.stringify(overlay));
 }

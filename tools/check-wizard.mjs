@@ -235,7 +235,7 @@ check("all products generate XML", allOk, true);
 
 /* 13. Every script we ship parses. A quoting slip in the render code would
    otherwise only show up as a blank page in the browser. */
-["site/odt-data.js", "site/odt-xml.js", "site/ui.js", "site/setup-core.js", "site/setup-sections.js", "site/setup-rail.js", "site/wizard.js"].forEach((file) => {
+["site/odt-data.js", "site/odt-xml.js", "site/ui.js", "site/setup-core.js", "site/setup-sections.js", "site/setup-rail.js", "site/wizard.js", "site/scrollbars.js"].forEach((file) => {
   let error = null;
   try {
     new vm.Script(readFileSync(join(root, file), "utf8"), { filename: file });
@@ -411,6 +411,10 @@ verify("scrollbars: Firefox is detected with -moz-appearance, not the selector i
   /^@supports \(-moz-appearance: none\)/m.test(scrollbarCss) &&
   !/^@supports not selector\(::-webkit-scrollbar\)/m.test(scrollbarCss),
   "Firefox 153 reports ::-webkit-scrollbar as supported without styling it");
+verify("scrollbars: the Firefox overlay is linked and styled",
+  markup.includes('<script src="scrollbars.js"></script>') &&
+  scrollbarCss.includes("html.ff-bars") && scrollbarCss.includes(".ff-sb-thumb"),
+  "overlay script or its rules are missing");
 const literalArrows = [...scrollbarCss.matchAll(/background-position: (-?\d+px -?\d+px);/g)]
   .map((match) => match[1]).sort();
 const sheetArrows = ["up", "down", "left", "right"].map((name) => {
