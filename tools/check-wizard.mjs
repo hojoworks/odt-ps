@@ -407,6 +407,10 @@ verify("icons: the sheet is 416x42, transparent behind the drawings, and palette
    pseudo-elements, so the four arrow positions are written out in scrollbars.css.
    Hold them to the sheet's own values, or a repack would silently blank them. */
 const scrollbarCss = readFileSync(join(root, "site", "scrollbars.css"), "utf8");
+verify("scrollbars: Firefox is detected with -moz-appearance, not the selector it now fakes",
+  /^@supports \(-moz-appearance: none\)/m.test(scrollbarCss) &&
+  !/^@supports not selector\(::-webkit-scrollbar\)/m.test(scrollbarCss),
+  "Firefox 153 reports ::-webkit-scrollbar as supported without styling it");
 const literalArrows = [...scrollbarCss.matchAll(/background-position: (-?\d+px -?\d+px);/g)]
   .map((match) => match[1]).sort();
 const sheetArrows = ["up", "down", "left", "right"].map((name) => {

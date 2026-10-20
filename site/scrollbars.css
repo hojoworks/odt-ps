@@ -13,11 +13,14 @@
   border-radius: 0;
 }
 
-/* Firefox cannot dither a scrollbar, so give it palette colours. The guard
-   matters: Chrome understands scrollbar-color and scrollbar-width too, and
-   specifying either makes it throw away every ::-webkit-scrollbar rule below --
-   which is exactly the bug that hid the chiselled bars. */
-@supports not selector(::-webkit-scrollbar) {
+/* Firefox cannot paint ::-webkit-scrollbar, so give it palette colours instead.
+   The old `@supports not selector(::-webkit-scrollbar)` guard no longer works:
+   Firefox 153 started reporting the selector as supported (for webcompat) while
+   still not styling anything through it, so the fallback was switched off.
+   -moz-appearance is still Firefox-only, so that is the reliable switch. The
+   colours matter: setting scrollbar-color in Chrome would throw away every
+   ::-webkit-scrollbar rule below, which is why this must not match it. */
+@supports (-moz-appearance: none) {
   :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p) {
     scrollbar-width: auto;
     scrollbar-color: #c0c0c0 #ffffff;
