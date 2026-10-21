@@ -213,12 +213,20 @@ export async function run(ctx) {
     "  function band(pseudo) {" +
     "    var cs = getComputedStyle(content, pseudo);" +
     "    return { display: cs.display, position: cs.position," +
-    "             fades: cs.backgroundImage.indexOf('linear-gradient') !== -1 };" +
+    "             fades: cs.backgroundImage.indexOf('linear-gradient') !== -1," +
+    "             z: cs.zIndex };" +
+    "  }" +
+    "  function strip(pseudo) {" +
+    "    var cs = getComputedStyle(document.querySelector('.setup-body'), pseudo);" +
+    "    return { display: cs.display, position: cs.position," +
+    "             fades: cs.backgroundImage.indexOf('linear-gradient') !== -1," +
+    "             z: cs.zIndex, width: parseFloat(cs.width) };" +
     "  }" +
     extra +
     "  return { above: content.classList.contains('has-above')," +
     "           below: content.classList.contains('has-below')," +
-    "           before: band('::before'), after: band('::after') };" +
+    "           before: band('::before'), after: band('::after')," +
+    "           stripBefore: strip('::before'), stripAfter: strip('::after') };" +
     "})()";
   await evaluate(client, "document.querySelector('.setup-content').scrollTop = 0");
   await wait(200);
@@ -239,6 +247,20 @@ export async function run(ctx) {
     atMiddle.before.position === "sticky" && atMiddle.after.fades === true &&
     atBottom.above === true && atBottom.below === false && atBottom.after.display === "none",
     JSON.stringify({ atTop: atTop, atMiddle: atMiddle, atBottom: atBottom }));
+
+  /* The fade reaches the scrollbar lane too: a strip over the lane shows with
+     the same edge, and paints above the bars so the bar fades with its content. */
+  check("the edge fade covers the scrollbar lane, above the bar, on the same edges as the content",
+    atTop.stripBefore.display === "none" && atTop.stripAfter.display === "block" &&
+    atTop.stripAfter.fades === true && atTop.stripAfter.position === "absolute" &&
+    atTop.stripAfter.z === "5" && atTop.stripAfter.width >= 16 &&
+    atMiddle.stripBefore.display === "block" && atMiddle.stripAfter.display === "block" &&
+    atMiddle.stripBefore.fades === true && atMiddle.stripAfter.fades === true &&
+    atBottom.stripBefore.display === "block" && atBottom.stripAfter.display === "none" &&
+    atBottom.stripBefore.z === "5",
+    JSON.stringify({ top: [atTop.stripBefore, atTop.stripAfter],
+                     middle: [atMiddle.stripBefore, atMiddle.stripAfter],
+                     bottom: [atBottom.stripBefore, atBottom.stripAfter] }));
 
   /* The Firefox overlay bars are real elements; Chromium paints its own, so
      build them here on request and drive one arrow. */
@@ -309,7 +331,7 @@ export async function run(ctx) {
     "    clip.bottom = Math.min(clip.bottom, innerHeight);" +
     "    return clip;" +
     "  }" +
-    "  var owners = document.querySelectorAll('.setup-content, .setup-rail, .pick-list, .xml-box, .pick-desc p');" +
+    "  var owners = document.querySelectorAll('.setup-content, .setup-rail, .pick-list, .cmd-box, .xml-box, .pick-desc p');" +
     "  var bars = 0, cut = 0, leaks = [];" +
     "  Array.prototype.forEach.call(document.querySelectorAll('.ff-sb, .ff-sb-corner'), function (bar) {" +
     "    if (getComputedStyle(bar).display === 'none') { return; }" +
@@ -351,4 +373,40 @@ export async function run(ctx) {
     cut.bars > 0 && cut.cut > 0 && cut.leaks.length === 0 && cut.shortHidden === true &&
     cut.shortPad === "6px" && cut.tallPad === "22px",
     JSON.stringify(cut));
+
+  /* The automatic-install line is longer than its box, and the overlay has to
+     give it the sideways bar too, with the foot reserved so the bar cannot sit
+     on the text. */
+  await pickVersion("O365ProPlusRetail");
+  await wait(300);
+  await evaluate(client,
+    "document.querySelector('#install-oneliner').closest('.cmd-box').scrollIntoView({ block: 'center' })");
+  await wait(250);
+  const sideways = await evaluate(client,
+    "(function () {" +
+    "  var box = document.querySelector('#install-oneliner').closest('.cmd-box');" +
+    "  var code = box.querySelector('code');" +
+    "  var pair = box.__ffScrollbar;" +
+    "  var bar = pair && pair.horizontal;" +
+    "  if (!bar) { return { bar: false, overflow: box.scrollWidth > box.clientWidth + 1 }; }" +
+    "  var thumb = bar.querySelector('.ff-sb-thumb');" +
+    "  var right = bar.querySelector('.ff-sb-right');" +
+    "  box.scrollLeft = 0;" +
+    "  var start = box.scrollLeft;" +
+    "  right.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }));" +
+    "  window.dispatchEvent(new PointerEvent('pointerup'));" +
+    "  return { bar: true, overflow: box.scrollWidth > box.clientWidth + 1," +
+    "           display: getComputedStyle(bar).display," +
+    "           thumb: Math.round(thumb.getBoundingClientRect().width)," +
+    "           hiddenNative: getComputedStyle(box).scrollbarWidth," +
+    "           pad: getComputedStyle(box).paddingBottom," +
+    "           clear: code.getBoundingClientRect().bottom <=" +
+    "             box.getBoundingClientRect().bottom - 16," +
+    "           start: start, after: box.scrollLeft };" +
+    "})()");
+  check("the automatic-install box gets a retro sideways bar and room to keep it off the line",
+    sideways.bar === true && sideways.overflow === true && sideways.display !== "none" &&
+    sideways.thumb > 0 && sideways.hiddenNative === "none" && sideways.pad === "22px" &&
+    sideways.clear === true && sideways.after > sideways.start,
+    JSON.stringify(sideways));
 }

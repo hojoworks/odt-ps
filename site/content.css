@@ -20,13 +20,15 @@
 .setup-content:focus { outline: none; }
 
 /* Sticky overlays rather than a mask on the scroller: the box sits inside the
-   content box, so it can never wash over the scrollbar beside it. */
+   content box, so it can never wash over the scrollbar beside it. The scrollbar
+   lane carries its own copy of the gradient (below), and the fade paints above
+   the overlay bars so a list's bar fades with the list under it. */
 .setup-content::before,
 .setup-content::after {
   content: "";
   display: none;
   position: sticky;
-  z-index: 3;
+  z-index: 5;
   height: var(--scroll-fade);
   pointer-events: none;
 }
@@ -46,6 +48,40 @@
   margin-top: calc(-1 * var(--scroll-fade));
   background-image: linear-gradient(rgba(192, 192, 192, 0), rgba(192, 192, 192, 1));
 }
+
+/* The content fade stops at the padding edge; the scrollbar sits outside it, in
+   its own 16px lane (Chromium's native bar) or in the strip reserved for the
+   Firefox overlay. A sticky child cannot reach across that lane and, in
+   Chromium, the native bar is painted above the content anyway. So the fade is
+   repeated over the lane from the column's parent, which does paint above the
+   bar in both engines, and joins the content fade at the padding edge. */
+.setup-body { position: relative; }
+
+.setup-body::before,
+.setup-body::after {
+  content: "";
+  display: none;
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  width: calc(16px + var(--gap));
+  height: var(--scroll-fade);
+  pointer-events: none;
+}
+
+/* the body's 3px top padding is where the scrolling column starts */
+.setup-body::before {
+  top: 3px;
+  background-image: linear-gradient(rgba(192, 192, 192, 1), rgba(192, 192, 192, 0));
+}
+
+.setup-body::after {
+  bottom: 0;
+  background-image: linear-gradient(rgba(192, 192, 192, 0), rgba(192, 192, 192, 1));
+}
+
+.setup-body:has(> .setup-content.has-above)::before { display: block; }
+.setup-body:has(> .setup-content.has-below)::after { display: block; }
 
 .setup-section {
   /* an anchored section lands clear of the edge fade, not inside it */

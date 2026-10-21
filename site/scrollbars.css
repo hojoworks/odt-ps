@@ -6,10 +6,10 @@
    border kills the thumb entirely, so the look is built from colours plus
    background images, which do render. */
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb,
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-track,
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button,
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-corner {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb,
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-track,
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button,
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-corner {
   border-radius: 0;
 }
 
@@ -21,19 +21,19 @@
    colours matter: setting scrollbar-color in Chrome would throw away every
    ::-webkit-scrollbar rule below, which is why this must not match it. */
 @supports (-moz-appearance: none) {
-  :is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p) {
+  :is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p) {
     scrollbar-width: auto;
     scrollbar-color: #c0c0c0 #ffffff;
   }
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar {
   width: 16px;
   height: 16px;
 }
 
 /* the track carries the classic 2px 50% dither */
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-track {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-track {
   background-color: #ffffff;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3Crect width='1' height='1' fill='%23c0c0c0'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23c0c0c0'/%3E%3C/svg%3E");
   background-size: 2px 2px;
@@ -42,7 +42,7 @@
 /* The thumb is chiselled: white on the top and left, black on the bottom and
    right, grey in between -- built from gradients, because a border on a
    scrollbar thumb makes Chrome drop the thumb altogether. */
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb {
   background-color: #c0c0c0;
   background-image:
     linear-gradient(#ffffff, #ffffff),
@@ -54,15 +54,15 @@
   background-repeat: no-repeat;
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb:hover {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb:hover {
   background-color: #d4d4d4;
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb:active {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-thumb:active {
   background-color: #a8a8a8;
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-corner { background-color: #c0c0c0; }
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-corner { background-color: #c0c0c0; }
 
 /* arrow buttons: sunken grey squares with a small black pixel triangle from the
    icon sheet. Each arrow is 6x6 inside its 12x12 cell, drawn at 2px so it stays
@@ -72,7 +72,7 @@
    properties: WebKit does not resolve `var()` inside scrollbar pseudo-elements,
    so a custom property there paints nothing. The checks compare these four
    numbers with the sheet's so they cannot drift. */
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button {
   display: block;
   width: 16px;
   height: 16px;
@@ -84,19 +84,19 @@
   border-color: #ffffff #000000 #000000 #ffffff;
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:decrement {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:decrement {
   background-position: -78px -16px;
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:increment {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:vertical:increment {
   background-position: -90px -16px;
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:decrement {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:decrement {
   background-position: -102px -16px;
 }
 
-:is(.setup-body, .setup-rail, .setup-content, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:increment {
+:is(.setup-body, .setup-rail, .setup-content, .cmd-box, .xml-box, .pick-list, .pick-desc p)::-webkit-scrollbar-button:single-button:horizontal:increment {
   background-position: -114px -16px;
 }
 
@@ -105,8 +105,9 @@
    bar with real elements over the scrollers. The class is added only in
    Firefox (or by the browser checks). The extra right padding is the strip the
    overlay sits in, doing the job the 16px native scrollbar does in Chromium;
-   the xml box also reserves the foot for its horizontal bar. */
-html.ff-bars :is(.setup-content, .setup-rail, .pick-list, .xml-box, .pick-desc p:not(.pick-tally)) {
+   the xml box and the command boxes also reserve the foot for their horizontal
+   bar, which Chromium's own bar takes out of the layout. */
+html.ff-bars :is(.setup-content, .setup-rail, .pick-list, .cmd-box, .xml-box, .pick-desc p:not(.pick-tally)) {
   scrollbar-width: none;
 }
 html.ff-bars .setup-content { padding-right: calc(var(--gap) + 16px); }
@@ -116,6 +117,7 @@ html.ff-bars .pick-list { padding-right: 17px; }
    below matches it and wins on the same class count; the short panes hide their
    overflow and get no bar, so they keep their own tighter padding */
 html.ff-bars .pick-columns:not(.short) .pick-desc p:not(.pick-tally) { padding-right: 22px; }
+html.ff-bars .cmd-box { padding-bottom: 22px; }
 html.ff-bars .xml-box { padding-right: 24px; padding-bottom: 22px; }
 
 .ff-sb,

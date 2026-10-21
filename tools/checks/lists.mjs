@@ -406,4 +406,18 @@ export async function run(ctx) {
     ["vertical:decrement", "vertical:increment", "horizontal:decrement", "horizontal:increment"]
       .every((way) => siteCss.includes("webkit-scrollbar-button:single-button:" + way)),
     JSON.stringify(scrollbar));
+
+  /* The command boxes scroll sideways too, so they take the same bar rather than
+     the browser's own: a 16px horizontal bar in Chromium, the overlay in Firefox. */
+  const cmdBar = await evaluate(client,
+    "(function () {" +
+    "  var box = document.querySelector('#install-oneliner').closest('.cmd-box');" +
+    "  function style(sel) { return getComputedStyle(box, sel); }" +
+    "  return { height: style('::-webkit-scrollbar').height," +
+    "           width: style('::-webkit-scrollbar').width," +
+    "           thumb: style('::-webkit-scrollbar-thumb').backgroundColor };" +
+    "})()");
+  check("the command boxes carry the same retro bar, so a long line scrolls sideways in style",
+    cmdBar.height === "16px" && cmdBar.width === "16px" &&
+    cmdBar.thumb === "rgb(192, 192, 192)", JSON.stringify(cmdBar));
 }

@@ -18,7 +18,7 @@
   "use strict";
 
   var SETUP = window.SETUP = window.SETUP || {};
-  var SELECTOR = ".setup-content, .setup-rail, .pick-list, .xml-box, .pick-desc p:not(.pick-tally)";
+  var SELECTOR = ".setup-content, .setup-rail, .pick-list, .cmd-box, .xml-box, .pick-desc p:not(.pick-tally)";
   var BAR = 16;
   var BUTTON = 16;
   var MIN_THUMB = 16;
@@ -199,7 +199,7 @@
   }
 
   function createItem(el) {
-    var item = { el: el, horizontal: el.classList.contains("xml-box") };
+    var item = { el: el, horizontal: el.classList.contains("cmd-box") || el.classList.contains("xml-box") };
     var style = window.getComputedStyle(el);
     item.scrollV = scrollable(style, "v");
     item.scrollH = scrollable(style, "h");
@@ -356,7 +356,16 @@
     window.addEventListener("resize", schedule);
     if (window.MutationObserver) {
       bodyObserver = new window.MutationObserver(schedule);
-      bodyObserver.observe(document.body, { childList: true, subtree: true });
+      /* The disclosure that holds the manual-install boxes changes only its
+         `open` attribute, and a section can be shown or hidden without new
+         children; both move or expose a scroller. Style changes are left out:
+         the bars write their own and would keep scheduling. */
+      bodyObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["open", "hidden", "class"]
+      });
     }
     schedule();
   }
