@@ -265,4 +265,90 @@ export async function run(ctx) {
     beforeBars === 0 && overlay.bars >= 1 && overlay.display !== "none" &&
     overlay.thumb > 0 && overlay.hiddenNative === "none" && overlay.after > overlay.start,
     JSON.stringify(overlay));
+
+  /* The bars are fixed to the viewport, outside every scrollport, so a scroller
+     half out of its list or half out of the window would paint its bar over the
+     sections below or past the window edge. Each bar has to be cut to what is
+     actually visible, the way the browser cuts its own. A short description pane
+     hides its overflow, so it gets no bar at all. */
+  await evaluate(client,
+    "(function () {" +
+    "  var content = document.querySelector('.setup-content');" +
+    "  var list = null;" +
+    "  Array.prototype.forEach.call(document.querySelectorAll('.pick-list'), function (el) {" +
+    "    if (!list && el.scrollHeight > el.clientHeight + 1) { list = el; }" +
+    "  });" +
+    "  content.scrollTop = 0;" +
+    "  if (list) {" +
+    "    content.scrollTop += Math.round(list.getBoundingClientRect().bottom -" +
+    "      content.getBoundingClientRect().bottom - 8);" +
+    "  }" +
+    "})()");
+  await wait(250);
+  const cut = await evaluate(client,
+    "(function () {" +
+    "  function clipOf(el) {" +
+    "    var rect = el.getBoundingClientRect();" +
+    "    var clip = { left: rect.left + el.clientLeft, top: rect.top + el.clientTop," +
+    "                 right: rect.left + el.clientLeft + el.clientWidth," +
+    "                 bottom: rect.top + el.clientTop + el.clientHeight };" +
+    "    var node = el.parentElement;" +
+    "    while (node) {" +
+    "      var cs = getComputedStyle(node);" +
+    "      if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') {" +
+    "        var r = node.getBoundingClientRect();" +
+    "        clip.left = Math.max(clip.left, r.left + node.clientLeft);" +
+    "        clip.top = Math.max(clip.top, r.top + node.clientTop);" +
+    "        clip.right = Math.min(clip.right, r.left + node.clientLeft + node.clientWidth);" +
+    "        clip.bottom = Math.min(clip.bottom, r.top + node.clientTop + node.clientHeight);" +
+    "      }" +
+    "      node = node.parentElement;" +
+    "    }" +
+    "    clip.left = Math.max(clip.left, 0); clip.top = Math.max(clip.top, 0);" +
+    "    clip.right = Math.min(clip.right, innerWidth);" +
+    "    clip.bottom = Math.min(clip.bottom, innerHeight);" +
+    "    return clip;" +
+    "  }" +
+    "  var owners = document.querySelectorAll('.setup-content, .setup-rail, .pick-list, .xml-box, .pick-desc p');" +
+    "  var bars = 0, cut = 0, leaks = [];" +
+    "  Array.prototype.forEach.call(document.querySelectorAll('.ff-sb, .ff-sb-corner'), function (bar) {" +
+    "    if (getComputedStyle(bar).display === 'none') { return; }" +
+    "    var owner = null;" +
+    "    Array.prototype.forEach.call(owners, function (el) {" +
+    "      var pair = el.__ffScrollbar;" +
+    "      if (pair && (pair.vertical === bar || pair.horizontal === bar)) { owner = el; }" +
+    "    });" +
+    "    if (!owner) { return; }" +
+    "    bars++;" +
+    "    var clip = clipOf(owner);" +
+    "    var r = bar.getBoundingClientRect();" +
+    "    var painted = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };" +
+    "    var n = (getComputedStyle(bar).clipPath.match(/-?[\\d.]+px/g) || []).map(parseFloat);" +
+    "    if (n.length === 1) { n = [n[0], n[0], n[0], n[0]]; }" +
+    "    else if (n.length === 2) { n = [n[0], n[1], n[0], n[1]]; }" +
+    "    else if (n.length === 3) { n = [n[0], n[1], n[2], n[1]]; }" +
+    "    if (n.length === 4) {" +
+    "      painted.top += n[0]; painted.right -= n[1];" +
+    "      painted.bottom -= n[2]; painted.left += n[3];" +
+    "      if (n[0] + n[1] + n[2] + n[3] > 0) { cut++; }" +
+    "    }" +
+    "    if (painted.right <= painted.left || painted.bottom <= painted.top ||" +
+    "        painted.left < clip.left - 1 || painted.top < clip.top - 1 ||" +
+    "        painted.right > clip.right + 1 || painted.bottom > clip.bottom + 1) {" +
+    "      leaks.push((owner.className || owner.tagName) + '/' + bar.className);" +
+    "    }" +
+    "  });" +
+    "  var short = document.querySelector('.pick-columns.short .pick-desc p:not(.pick-tally)');" +
+    "  var shortBar = short && short.__ffScrollbar && short.__ffScrollbar.vertical;" +
+    "  var tall = document.querySelector('.pick-columns:not(.short) .pick-desc p:not(.pick-tally)');" +
+    "  return { bars: bars, cut: cut, leaks: leaks," +
+    "           shortHidden: !short || (getComputedStyle(short).overflowY === 'hidden' &&" +
+    "             (!shortBar || getComputedStyle(shortBar).display === 'none'))," +
+    "           shortPad: short ? getComputedStyle(short).paddingRight : ''," +
+    "           tallPad: tall ? getComputedStyle(tall).paddingRight : '' };" +
+    "})()");
+  check("the Firefox overlay bars are cut to the visible part of their scroller, never past a list or the window",
+    cut.bars > 0 && cut.cut > 0 && cut.leaks.length === 0 && cut.shortHidden === true &&
+    cut.shortPad === "6px" && cut.tallPad === "22px",
+    JSON.stringify(cut));
 }

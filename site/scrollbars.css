@@ -112,9 +112,10 @@ html.ff-bars :is(.setup-content, .setup-rail, .pick-list, .xml-box, .pick-desc p
 html.ff-bars .setup-content { padding-right: calc(var(--gap) + 16px); }
 html.ff-bars .setup-rail { padding-right: 24px; }
 html.ff-bars .pick-list { padding-right: 17px; }
-/* the short panes carry a more specific padding rule, so the scoped selector
-   below matches it and wins on the same class count */
-html.ff-bars .pick-columns .pick-desc p:not(.pick-tally) { padding-right: 22px; }
+/* the full panes carry a more specific padding rule, so the scoped selector
+   below matches it and wins on the same class count; the short panes hide their
+   overflow and get no bar, so they keep their own tighter padding */
+html.ff-bars .pick-columns:not(.short) .pick-desc p:not(.pick-tally) { padding-right: 22px; }
 html.ff-bars .xml-box { padding-right: 24px; padding-bottom: 22px; }
 
 .ff-sb,
